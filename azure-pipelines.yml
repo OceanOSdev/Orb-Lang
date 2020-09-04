@@ -3,10 +3,19 @@ pool:
   
 variables:
     buildConfiguration: 'Release'
+    sln: './orb.sln'
     tests: './Orb.Tests/Orb.Tests.csproj'
   
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
-- script: dotnet test $(tests)
-  displayName: 'dotnet test'
+- task: DotNetCoreCLI@2
+  displayName: 'Build OrbLang $(buildConfiguration)'
+  inputs:
+    command: build
+    projects: $(sln)
+    arguments: --configuration $(buildConfiguration)
+- task: DotNetCoreCLI@1
+  displayName: 'Run tests'
+  input:
+    command: tests
+    projects: $(tests)
+    publishTestResults: true
