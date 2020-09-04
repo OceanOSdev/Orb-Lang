@@ -18,9 +18,11 @@ steps:
   inputs:
     command: test
     projects: $(tests)
+    arguments: -r Orb.TestResults -l "trx;LogFileName=TEST-RESULTS.xml"
 # Publish Test Results
 # Publish test results to Azure Pipelines
 - task: PublishTestResults@2
+  displayName: 'Publish test results'
   inputs:
-    testResultsFormat: 'xUnit'
+    testResultsFormat: 'VSTest'
     testResultsFiles: '**/TEST-*.xml'
