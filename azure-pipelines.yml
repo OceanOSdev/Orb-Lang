@@ -1,5 +1,5 @@
 pool:
-    vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-latest'
   
 variables:
     buildConfiguration: 'Release'
@@ -18,7 +18,7 @@ steps:
   inputs:
     command: test
     projects: $(tests)
-    arguments: -r Orb.TestResults -l "trx;LogFileName=TEST-RESULTS.xml"
+    arguments: -r Orb.TestResults -l "trx;LogFileName=TEST-RESULTS.xml" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/
 # Publish Test Results
 # Publish test results to Azure Pipelines
 - task: PublishTestResults@2
@@ -26,3 +26,9 @@ steps:
   inputs:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/TEST-*.xml'
+# Collect Code Coverage
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish code coverage'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
