@@ -1,3 +1,5 @@
+using Orb.CodeAnalysis.Text;
+
 namespace Orb.CodeAnalysis.Syntax
 {
     internal sealed class Lexer

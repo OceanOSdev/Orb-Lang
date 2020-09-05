@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Orb.CodeAnalysis.Syntax;
+using Orb.CodeAnalysis.Text;
 
 namespace Orb.CodeAnalysis
 {
