@@ -30,5 +30,4 @@ namespace Orb.CodeAnalysis
             return new EvaluationResult(ImmutableArray<Diagnostic>.Empty, value);
         }
     }
-
 }
