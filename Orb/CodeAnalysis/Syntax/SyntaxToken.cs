@@ -18,11 +18,5 @@ namespace Orb.CodeAnalysis.Syntax
             Text = text;
             Value = value;
         }
-
-        public override IEnumerable<SyntaxNode> GetChildren()
-        {
-            return Enumerable.Empty<SyntaxNode>();
-        }
     }
-
 }
