@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Orb.CodeAnalysis.Text;
 
 namespace Orb.CodeAnalysis.Syntax
 {
@@ -9,7 +10,7 @@ namespace Orb.CodeAnalysis.Syntax
         private readonly ImmutableArray<SyntaxToken> _tokens;
         private int _position;
 
-        public Parser(string text)
+        public Parser(SourceText text)
         {
             var tokens = new List<SyntaxToken>();
 
