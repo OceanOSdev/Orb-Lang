@@ -1,4 +1,4 @@
 @echo off
 
-dotnet build
-dotnet test .\Orb.Tests\Orb.Tests.csproj
+dotnet build .\src\orb.sln
+dotnet test .\src\Orb.Tests\Orb.Tests.csproj

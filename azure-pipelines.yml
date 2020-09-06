@@ -3,8 +3,8 @@ pool:
   
 variables:
     buildConfiguration: 'Release'
-    sln: './orb.sln'
-    tests: './Orb.Tests/Orb.Tests.csproj'
+    sln: './src/orb.sln'
+    tests: './src/Orb.Tests/Orb.Tests.csproj'
   
 steps:
 - task: DotNetCoreCLI@2
@@ -12,7 +12,7 @@ steps:
   inputs:
     command: build
     projects: $(sln)
-    arguments: --configuration $(buildConfiguration)
+    arguments: --configuration $(buildConfiguration) $(sln)
 - task: DotNetCoreCLI@1
   displayName: 'Run tests'
   inputs:
