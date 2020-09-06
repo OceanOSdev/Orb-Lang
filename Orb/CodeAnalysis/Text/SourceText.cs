@@ -22,7 +22,7 @@ namespace Orb.CodeAnalysis.Text
         public int GetLineIndex(int position)
         {
             var lower = 0;
-            var upper = _text.Length - 1;
+            var upper = Lines.Length - 1;
 
             while (lower <= upper)
             {
@@ -31,8 +31,8 @@ namespace Orb.CodeAnalysis.Text
 
                 if (position == start)
                     return index;
-                    
-                if (position > start)
+
+                if (position < start)
                 {
                     upper = index - 1;
                 }
@@ -70,10 +70,7 @@ namespace Orb.CodeAnalysis.Text
             }
 
             if (position > lineStart)
-            {
-                    AddLine(result, sourceText, position, lineStart, 0);
-
-            }
+                AddLine(result, sourceText, position, lineStart, 0);
 
             return result.ToImmutable();
         }
@@ -89,14 +86,14 @@ namespace Orb.CodeAnalysis.Text
         private static int GetLineBreakWidth(string text, int i)
         {
             var c = text[i];
-            var l = i + 1 >= text.Length ? '\0' : text[i+1];
+            var l = i + 1 >= text.Length ? '\0' : text[i + 1];
 
             if (c == '\r' && l == '\n')
                 return 2;
-            
+
             if (c == '\r' || c == '\n')
                 return 1;
-            
+
             return 0;
         }
 
