@@ -19,6 +19,11 @@ namespace Orb.CodeAnalysis.Text
             Lines = ParseLines(this, text);
         }
 
+        public static SourceText From(string text)
+        {
+            return new SourceText(text);
+        }
+
         public int GetLineIndex(int position)
         {
             var lower = 0;
@@ -95,11 +100,6 @@ namespace Orb.CodeAnalysis.Text
                 return 1;
 
             return 0;
-        }
-
-        public static SourceText From(string text)
-        {
-            return new SourceText(text);
         }
 
         public override string ToString() => _text;
