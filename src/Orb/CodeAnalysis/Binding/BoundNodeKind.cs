@@ -5,6 +5,7 @@ namespace Orb.CodeAnalysis.Binding
         //Statements
         BlockStatement,
         ExpressionStatement,
+        VariableDeclaration,
 
         // Expressions
         LiteralExpression,

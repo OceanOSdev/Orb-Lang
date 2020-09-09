@@ -26,6 +26,8 @@ namespace Orb.CodeAnalysis.Syntax
         // Keywords
         FalseKeyword,
         TrueKeyword,
+        LetKeyword,
+        VarKeyword,
 
         // Nodes
         CompilationUnit,
@@ -33,6 +35,7 @@ namespace Orb.CodeAnalysis.Syntax
         // Statements
         BlockStatement,
         ExpressionStatement,
+        VariableDeclaration,
 
         // Expressions
         LiteralExpression,
