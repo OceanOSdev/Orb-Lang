@@ -60,7 +60,7 @@ namespace Orb.CodeAnalysis
         private void EvaluateIfStatement(BoundIfStatement node)
         {
             var condition = (bool)EvaluateExpression(node.Condition);
-            if (!condition)
+            if (condition)
                 EvaluateStatement(node.ThenStatement);
             else if (node.ElseStatement != null)
                 EvaluateStatement(node.ElseStatement);
