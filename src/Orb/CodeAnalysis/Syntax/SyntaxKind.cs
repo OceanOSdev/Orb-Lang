@@ -25,6 +25,9 @@ namespace Orb.CodeAnalysis.Syntax
         FalseKeyword,
         TrueKeyword,
 
+        // Nodes
+        CompilationUnit,
+
         // Expressions
         LiteralExpression,
         NameExpression,
