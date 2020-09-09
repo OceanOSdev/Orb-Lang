@@ -23,6 +23,7 @@ steps:
 # Publish test results to Azure Pipelines
 - task: PublishTestResults@2
   displayName: 'Publish test results'
+  condition: always()
   inputs:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**/TEST-*.xml'
