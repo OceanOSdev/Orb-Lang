@@ -32,14 +32,18 @@ namespace Orb.CodeAnalysis.Syntax
         TrueKeyword,
         LetKeyword,
         VarKeyword,
+        IfKeyword,
+        ElseKeyword,
 
         // Nodes
         CompilationUnit,
+        ElseClause,
 
         // Statements
         BlockStatement,
-        ExpressionStatement,
         VariableDeclaration,
+        IfStatement,
+        ExpressionStatement,
 
         // Expressions
         LiteralExpression,

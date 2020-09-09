@@ -10,30 +10,11 @@
              "request": "launch",
              "preLaunchTask": "build",
              // If you have changed target frameworks, make sure to update the program path.
-             "program": "${workspaceFolder}/Orbc/bin/Debug/netcoreapp2.1/Orbc.dll",
+             "program": "${workspaceFolder}/src/Orbc/bin/Debug/netcoreapp2.1/Orbc.dll",
              "args": [],
-             "cwd": "${workspaceFolder}/Orbc",
+             "cwd": "${workspaceFolder}/src/Orbc",
              // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
              "console": "externalTerminal",
-             "stopAtEntry": false,
-             "internalConsoleOptions": "openOnSessionStart"
-         },
-         {
-             "name": ".NET Core Attach",
-             "type": "coreclr",
-             "request": "attach",
-             "processId": "${command:pickProcess}"
-         }
-     ,
-         {
-             "name": ".NET Core Launch (console)",
-             "type": "coreclr",
-             "request": "launch",
-             "preLaunchTask": "build",
-             "program": "${workspaceFolder}/Orbc/bin/Debug/netcoreapp2.1/Orbc.dll",
-             "args": [],
-             "cwd": "${workspaceFolder}/Orbc",
-             "console": "internalConsole",
              "stopAtEntry": false,
              "internalConsoleOptions": "openOnSessionStart"
          },
