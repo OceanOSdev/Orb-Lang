@@ -75,6 +75,8 @@ namespace Orb.CodeAnalysis.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclaration();
+                case SyntaxKind.IfStatement:
+                    return ParseIfStatement();
                 default:
                     return ParseExpressionStatement();
             }
@@ -106,6 +108,25 @@ namespace Orb.CodeAnalysis.Syntax
             var equals = MatchToken(SyntaxKind.EqualsToken);
             var initializer = ParseExpression();
             return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
+        }
+
+        private StatementSyntax ParseIfStatement()
+        {
+            var keyword = MatchToken(SyntaxKind.IfKeyword);
+            var condition = ParseExpression();
+            var statement = ParseStatement();
+            var elseClause = ParseElseClause();
+            return new IfStatementSyntax(keyword, condition, statement, elseClause);
+        }
+
+        private ElseClauseSyntax ParseElseClause()
+        {
+            if (Current.Kind != SyntaxKind.ElseKeyword)
+                return null;
+            
+            var keyword = MatchToken(SyntaxKind.ElseKeyword);
+            var statement = ParseStatement();
+            return new ElseClauseSyntax(keyword, statement);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()
