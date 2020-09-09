@@ -31,7 +31,7 @@ namespace Orb.Tests.CodeAnalysis
         [InlineData("true != false", true)]
         [InlineData("true||false", true)]
         [InlineData("true&&false", false)]
-        [InlineData("(a = 10)*a", 100)]
+        [InlineData("{var a = 10\r\n a*a}", 100)]
         public void Evaluator_Computes_CorrectValues(string text, object expectedResult)
         {
             var syntaxTree = SyntaxTree.Parse(text);
