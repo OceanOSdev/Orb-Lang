@@ -79,6 +79,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return ParseIfStatement();
                 case SyntaxKind.WhileKeyword:
                     return ParseWhileStatement();
+                case SyntaxKind.ForKeyword:
+                    return ParseForStatement();
                 default:
                     return ParseExpressionStatement();
             }
@@ -121,14 +123,6 @@ namespace Orb.CodeAnalysis.Syntax
             return new IfStatementSyntax(keyword, condition, statement, elseClause);
         }
 
-        private StatementSyntax ParseWhileStatement()
-        {
-            var keyword = MatchToken(SyntaxKind.WhileKeyword);
-            var condition = ParseExpression();
-            var body = ParseStatement();
-            return new WhileStatementSyntax(keyword, condition, body);
-        }
-
         private ElseClauseSyntax ParseElseClause()
         {
             if (Current.Kind != SyntaxKind.ElseKeyword)
@@ -137,6 +131,26 @@ namespace Orb.CodeAnalysis.Syntax
             var keyword = MatchToken(SyntaxKind.ElseKeyword);
             var statement = ParseStatement();
             return new ElseClauseSyntax(keyword, statement);
+        }
+
+        private StatementSyntax ParseWhileStatement()
+        {
+            var keyword = MatchToken(SyntaxKind.WhileKeyword);
+            var condition = ParseExpression();
+            var body = ParseStatement();
+            return new WhileStatementSyntax(keyword, condition, body);
+        }
+
+        private StatementSyntax ParseForStatement()
+        {
+            var keyword = MatchToken(SyntaxKind.ForKeyword);
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var eqToken = MatchToken(SyntaxKind.EqualsToken);
+            var lowerBound = ParseExpression();
+            var toKeyword = MatchToken(SyntaxKind.ToKeyword);
+            var upperBound = ParseExpression();
+            var body = ParseStatement();
+            return new ForStatementSyntax(keyword, identifier, eqToken, lowerBound, toKeyword, upperBound, body);
         }
 
         private ExpressionStatementSyntax ParseExpressionStatement()
