@@ -7,6 +7,7 @@ namespace Orb.CodeAnalysis.Binding
         ExpressionStatement,
         VariableDeclaration,
         IfStatement,
+        WhileStatement,
 
         // Expressions
         LiteralExpression,
