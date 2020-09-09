@@ -34,6 +34,7 @@ namespace Orb.CodeAnalysis.Syntax
         VarKeyword,
         IfKeyword,
         ElseKeyword,
+        WhileKeyword,
 
         // Nodes
         CompilationUnit,
@@ -43,6 +44,7 @@ namespace Orb.CodeAnalysis.Syntax
         BlockStatement,
         VariableDeclaration,
         IfStatement,
+        WhileStatement,
         ExpressionStatement,
 
         // Expressions
