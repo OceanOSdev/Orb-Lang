@@ -75,7 +75,7 @@ namespace Orb.CodeAnalysis.Syntax
                 case SyntaxKind.LetKeyword:
                 case SyntaxKind.VarKeyword:
                     return ParseVariableDeclaration();
-                case SyntaxKind.IfStatement:
+                case SyntaxKind.IfKeyword:
                     return ParseIfStatement();
                 default:
                     return ParseExpressionStatement();
