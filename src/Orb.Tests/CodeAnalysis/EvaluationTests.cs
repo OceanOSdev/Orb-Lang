@@ -127,6 +127,35 @@ namespace Orb.Tests.CodeAnalysis
 
             AssertDiagnostics(text, diagnostics);
         }
+
+        [Fact]
+        public void Evaluator_NameExpression_Reports_NoErrorForInsertedToken()
+        {
+            var text = @"[]";
+
+            var diagnostics = @"
+                Unexpected token <EndOfFileToken>, expected <IdentifierToken>.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
+        [Fact]
+        public void Evaluator_BlockStatement_NoInfiniteLoop()
+        {
+            var text = @"
+                {
+                [)][]
+            ";
+
+            var diagnostics = @"
+                Unexpected token <CloseParenthesisToken>, expected <IdentifierToken>.
+                Unexpected token <EndOfFileToken>, expected <CloseBraceToken>.
+            ";
+
+            AssertDiagnostics(text, diagnostics);
+        }
+
         
         [Fact]
         public void Evaluator_Name_Reports_Undefined()
