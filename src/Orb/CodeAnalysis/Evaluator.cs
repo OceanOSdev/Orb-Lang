@@ -143,6 +143,8 @@ namespace Orb.CodeAnalysis
                     return -(int)operand;
                 case BoundUnaryOperatorKind.LogicalNegation:
                     return !(bool)operand;
+                case BoundUnaryOperatorKind.OnesComplement:
+                    return ~(int)operand;
                 default:
                     throw new Exception($"Unexpected unary operator {u.Op}");
             }
@@ -167,6 +169,21 @@ namespace Orb.CodeAnalysis
                     return (bool)left && (bool)right;
                 case BoundBinaryOperatorKind.LogicalOr:
                     return (bool)left || (bool)right;
+                case BoundBinaryOperatorKind.BitwiseAnd:
+                    if (b.Type == typeof(int))
+                        return (int)left & (int)right;
+                    else
+                        return (bool)left & (bool)right;
+                case BoundBinaryOperatorKind.BitwiseOr:
+                    if (b.Type == typeof(int))
+                        return (int)left | (int)right;
+                    else
+                        return (bool)left | (bool)right;
+                case BoundBinaryOperatorKind.BitwiseXor:
+                    if (b.Type == typeof(int))
+                        return (int)left ^ (int)right;
+                    else
+                        return (bool)left ^ (bool)right;
                 case BoundBinaryOperatorKind.Equals:
                     return Equals(left, right);
                 case BoundBinaryOperatorKind.NotEquals:

@@ -4,6 +4,7 @@ namespace Orb.CodeAnalysis.Binding
     {
         Identity,
         Negation,
-        LogicalNegation
+        LogicalNegation,
+        OnesComplement
     }
 }
