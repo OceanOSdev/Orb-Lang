@@ -9,6 +9,9 @@ namespace Orb.CodeAnalysis.Binding
         IfStatement,
         WhileStatement,
         ForStatement,
+        GotoStatement,
+        ConditionalGotoStatement,
+        LabelStatement,
 
         // Expressions
         LiteralExpression,
