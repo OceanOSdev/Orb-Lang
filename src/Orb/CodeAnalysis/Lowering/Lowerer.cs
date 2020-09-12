@@ -62,7 +62,7 @@ namespace Orb.CodeAnalysis.Lowering
                 // <then>
                 // end:
                 var endLabel = GenerateLabel();
-                var gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, true);
+                var gotoFalse = new BoundConditionalGotoStatement(endLabel, node.Condition, false);
                 var endLabelStatement = new BoundLabelStatement(endLabel);
                 var result = new BoundBlockStatement(
                     ImmutableArray.Create<BoundStatement>(
@@ -89,7 +89,7 @@ namespace Orb.CodeAnalysis.Lowering
                 // end:
                 var elseLabel = GenerateLabel();
                 var endLabel = GenerateLabel();
-                var gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, true);
+                var gotoFalse = new BoundConditionalGotoStatement(elseLabel, node.Condition, false);
                 var gotoEndStatement = new BoundGotoStatement(endLabel);
                 var elseLabelStatement = new BoundLabelStatement(elseLabel);
                 var endLabelStatement = new BoundLabelStatement(endLabel);
@@ -129,7 +129,7 @@ namespace Orb.CodeAnalysis.Lowering
             var gotoCheck = new BoundGotoStatement(checkLabel);
             var continueLabelStatement = new BoundLabelStatement(continueLabel);
             var checkLabelStatement = new BoundLabelStatement(checkLabel);
-            var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition, false);
+            var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition);
             var endLabelStatement = new BoundLabelStatement(endLabel);
 
             var result = new BoundBlockStatement(
