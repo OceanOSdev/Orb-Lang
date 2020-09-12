@@ -21,6 +21,12 @@ namespace Orb.CodeAnalysis.Binding
                     return RewriteWhileStatement((BoundWhileStatement)node);
                 case BoundNodeKind.ForStatement:
                     return RewriteForStatement((BoundForStatement)node);
+                case BoundNodeKind.LabelStatement:
+                    return RewriteLabelStatement((BoundLabelStatement)node);
+                case BoundNodeKind.GotoStatement:
+                    return RewriteGotoStatement((BoundGotoStatement)node);
+                case BoundNodeKind.ConditionalGotoStatement:
+                    return RewriteConditionalGotoStatement((BoundConditionalGotoStatement)node);
                 default:
                     throw new Exception($"Unexpected node: {node.Kind}");
             }
@@ -110,6 +116,25 @@ namespace Orb.CodeAnalysis.Binding
                 return node;
             
             return new BoundForStatement(node.Variable, lowerBound, upperBound, body);
+        }
+
+        protected virtual BoundStatement RewriteLabelStatement(BoundLabelStatement node)
+        {
+            return node;
+        }
+
+        protected virtual BoundStatement RewriteGotoStatement(BoundGotoStatement node)
+        {
+            return node;
+        }
+
+        protected virtual BoundStatement RewriteConditionalGotoStatement(BoundConditionalGotoStatement node)
+        {
+            var condition = node.Condition;
+            if (condition == node.Condition)
+                return node;
+            
+            return new BoundConditionalGotoStatement(node.Label, condition, node.JumpIfFalse);
         }
 
         public virtual BoundExpression RewriteExpression(BoundExpression node)
