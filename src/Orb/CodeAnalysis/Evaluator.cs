@@ -153,17 +153,17 @@ namespace Orb.CodeAnalysis
                 case BoundBinaryOperatorKind.LogicalOr:
                     return (bool)left || (bool)right;
                 case BoundBinaryOperatorKind.BitwiseAnd:
-                    if (b.Type == typeof(int))
+                    if (b.Type == TypeSymbol.Int)
                         return (int)left & (int)right;
                     else
                         return (bool)left & (bool)right;
                 case BoundBinaryOperatorKind.BitwiseOr:
-                    if (b.Type == typeof(int))
+                    if (b.Type == TypeSymbol.Int)
                         return (int)left | (int)right;
                     else
                         return (bool)left | (bool)right;
                 case BoundBinaryOperatorKind.BitwiseXor:
-                    if (b.Type == typeof(int))
+                    if (b.Type == TypeSymbol.Int)
                         return (int)left ^ (int)right;
                     else
                         return (bool)left ^ (bool)right;
