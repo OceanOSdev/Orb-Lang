@@ -1,4 +1,5 @@
 using System;
+using Orb.CodeAnalysis.Symbols;
 
 namespace Orb.CodeAnalysis.Binding
 {

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 
 namespace Orb.CodeAnalysis.Binding

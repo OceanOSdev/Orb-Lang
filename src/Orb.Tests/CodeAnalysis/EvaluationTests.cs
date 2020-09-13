@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Orb.CodeAnalysis;
+using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 using Xunit;
 

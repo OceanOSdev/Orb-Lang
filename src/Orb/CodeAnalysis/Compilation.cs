@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using Orb.CodeAnalysis.Binding;
 using Orb.CodeAnalysis.Lowering;
+using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 
 namespace Orb.CodeAnalysis

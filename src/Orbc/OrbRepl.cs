@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Orb.CodeAnalysis;
+using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 using Orb.CodeAnalysis.Text;
 

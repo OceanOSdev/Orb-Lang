@@ -1,3 +1,5 @@
+using Orb.CodeAnalysis.Symbols;
+
 namespace Orb.CodeAnalysis.Binding
 {
     internal sealed class BoundVariableDeclaration : BoundStatement

@@ -1,6 +1,6 @@
 using System;
 
-namespace Orb.CodeAnalysis
+namespace Orb.CodeAnalysis.Symbols
 {
     public sealed class VariableSymbol
     {

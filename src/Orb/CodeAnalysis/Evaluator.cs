@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Orb.CodeAnalysis.Binding;
+using Orb.CodeAnalysis.Symbols;
 
 namespace Orb.CodeAnalysis
 {
