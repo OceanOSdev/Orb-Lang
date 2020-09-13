@@ -33,10 +33,10 @@ namespace Orb.CodeAnalysis.Binding
             var stack = new Stack<BoundGlobalScope>();
             while (previous != null)
             {
-                stack.Push(previous);                
+                stack.Push(previous);
                 previous = previous.Previous;
             }
-            
+
             BoundScope parent = null;
 
             while (stack.Count > 0)
@@ -45,7 +45,7 @@ namespace Orb.CodeAnalysis.Binding
                 var scope = new BoundScope(parent);
                 foreach (var v in previous.Variables)
                     scope.TryDeclare(v);
-                
+
                 parent = scope;
             }
 
@@ -86,12 +86,12 @@ namespace Orb.CodeAnalysis.Binding
                 var statement = BindStatement(statementSyntax);
                 statements.Add(statement);
             }
-            
+
             _scope = _scope.Parent;
-            
+
             return new BoundBlockStatement(statements.ToImmutable());
         }
-        
+
         private BoundStatement BindVariableDeclaration(VariableDeclarationSyntax syntax)
         {
             var name = syntax.Identifier.Text;
@@ -102,7 +102,7 @@ namespace Orb.CodeAnalysis.Binding
             if (!_scope.TryDeclare(variable))
                 _diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
 
-            return new BoundVariableDeclaration(variable, initializer);            
+            return new BoundVariableDeclaration(variable, initializer);
         }
 
         private BoundStatement BindIfStatement(IfStatementSyntax syntax)
@@ -126,12 +126,12 @@ namespace Orb.CodeAnalysis.Binding
             var upperBound = BindExpression(syntax.UpperBound, TypeSymbol.Int);
 
             _scope = new BoundScope(_scope);
-            
+
             var name = syntax.Identifier.Text;
             var variable = new VariableSymbol(name, true, TypeSymbol.Int);
             if (!_scope.TryDeclare(variable))
                 _diagnostics.ReportVariableAlreadyDeclared(syntax.Identifier.Span, name);
-            
+
             var body = BindStatement(syntax.Body);
 
             _scope = _scope.Parent;
@@ -148,9 +148,11 @@ namespace Orb.CodeAnalysis.Binding
         private BoundExpression BindExpression(ExpressionSyntax syntax, TypeSymbol targetType)
         {
             var result = BindExpression(syntax);
-            if (result.Type != targetType)
+            if (result.Type != TypeSymbol.Error &&
+                targetType != TypeSymbol.Error &&
+                result.Type != targetType)
                 _diagnostics.ReportCannotConvert(syntax.Span, result.Type, targetType);
-            
+
             return result;
         }
 
@@ -193,12 +195,12 @@ namespace Orb.CodeAnalysis.Binding
             {
                 // This means the token was inserted by the parser. We already
                 // reported error so we can just return an error expression.
-                return new BoundLiteralExpression(0);
+                return new BoundErrorExpression();
             }
             if (!_scope.TryLookup(name, out var variable))
             {
                 _diagnostics.ReportUndefinedName(syntax.IdentifierToken.Span, name);
-                return new BoundLiteralExpression(0);
+                return new BoundErrorExpression();
             }
 
             return new BoundVariableExpression(variable);
@@ -232,10 +234,13 @@ namespace Orb.CodeAnalysis.Binding
             var boundOperand = BindExpression(syntax.Operand);
             var boundOperator = BoundUnaryOperator.Bind(syntax.OperatorToken.Kind, boundOperand.Type);
 
+            if (boundOperand.Type == TypeSymbol.Error)
+                return new BoundErrorExpression();
+
             if (boundOperator == null)
             {
                 _diagnostics.ReportUndefinedUnaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundOperand.Type);
-                return boundOperand;
+                return new BoundErrorExpression();
             }
 
             return new BoundUnaryExpression(boundOperator, boundOperand);
@@ -247,10 +252,14 @@ namespace Orb.CodeAnalysis.Binding
             var boundRight = BindExpression(syntax.Right);
             var boundOperator = BoundBinaryOperator.Bind(syntax.OperatorToken.Kind, boundLeft.Type, boundRight.Type);
 
+            if (boundLeft.Type == TypeSymbol.Error ||
+                boundRight.Type == TypeSymbol.Error)
+                return new BoundErrorExpression();
+
             if (boundOperator == null)
             {
                 _diagnostics.ReportUndefinedBinaryOperator(syntax.OperatorToken.Span, syntax.OperatorToken.Text, boundLeft.Type, boundRight.Type);
-                return boundLeft;
+                return new BoundErrorExpression();
             }
 
             return new BoundBinaryExpression(boundLeft, boundOperator, boundRight);

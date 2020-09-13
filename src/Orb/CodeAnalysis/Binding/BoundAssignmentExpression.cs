@@ -3,6 +3,12 @@ using Orb.CodeAnalysis.Symbols;
 
 namespace Orb.CodeAnalysis.Binding
 {
+    internal sealed class BoundErrorExpression : BoundExpression
+    {
+        public override TypeSymbol Type => TypeSymbol.Error;
+
+        public override BoundNodeKind Kind => BoundNodeKind.ErrorExpression;
+    }
     internal sealed class BoundAssignmentExpression : BoundExpression
     {
         public BoundAssignmentExpression(VariableSymbol variable, BoundExpression expression)
