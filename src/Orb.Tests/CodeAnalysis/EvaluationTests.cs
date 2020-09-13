@@ -64,6 +64,7 @@ namespace Orb.Tests.CodeAnalysis
         [InlineData("true ^ false", true)]
         [InlineData("false ^ true", true)]
         [InlineData("true ^ true", false)]
+        [InlineData("\"hello\"+\"world\"", "helloworld")]
         [InlineData("var a = 10", 10)]
         [InlineData("{ var a = 10 (a * a) }", 100)]
         [InlineData("{var a = 10\r\n a*a}", 100)]
