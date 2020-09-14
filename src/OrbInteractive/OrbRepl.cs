@@ -6,7 +6,7 @@ using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 using Orb.CodeAnalysis.Text;
 
-namespace Orbc
+namespace OrbInteractive
 {
     internal sealed class OrbRepl : Repl
     {
