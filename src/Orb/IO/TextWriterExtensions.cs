@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.IO;
+using Orb.CodeAnalysis.Syntax;
 
 namespace Orb.IO
 {
@@ -29,6 +30,11 @@ namespace Orb.IO
                 Console.ResetColor();
         }
 
+        public static void WriteKeyword(this TextWriter writer, SyntaxKind kind)
+        {
+            writer.WriteKeyword(SyntaxFacts.GetText(kind));
+        }
+
         public static void WriteKeyword(this TextWriter writer, string text)
         {
             writer.SetForeground(ConsoleColor.Blue);
@@ -55,6 +61,16 @@ namespace Orb.IO
             writer.SetForeground(ConsoleColor.Magenta);
             writer.Write(text);
             writer.ResetColor();
+        }
+
+        public static void WriteSpace(this TextWriter writer)
+        {
+            writer.WritePunctuation(" ");
+        }
+
+        public static void WritePunctuation(this TextWriter writer, SyntaxKind kind)
+        {
+            writer.WritePunctuation(SyntaxFacts.GetText(kind));
         }
 
         public static void WritePunctuation(this TextWriter writer, string text)
