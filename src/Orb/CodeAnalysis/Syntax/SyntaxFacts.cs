@@ -19,6 +19,7 @@ namespace Orb.CodeAnalysis.Syntax
                     return 0;
             }
         }
+        
         public static int GetBinaryOperatorPrecedence(this SyntaxKind kind)
         {
             switch (kind)
@@ -51,7 +52,7 @@ namespace Orb.CodeAnalysis.Syntax
                     return 0;
             }
         }
-
+        
         public static SyntaxKind GetKeywordKind(string text)
         {
             switch (text)

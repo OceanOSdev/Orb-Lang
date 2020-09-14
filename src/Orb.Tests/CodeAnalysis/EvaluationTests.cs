@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Orb.CodeAnalysis;
+using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 using Xunit;
 
@@ -63,6 +64,11 @@ namespace Orb.Tests.CodeAnalysis
         [InlineData("true ^ false", true)]
         [InlineData("false ^ true", true)]
         [InlineData("true ^ true", false)]
+        [InlineData("\"hello\"+\"world\"", "helloworld")]
+        [InlineData("\"hello\" == \"world\"", false)]
+        [InlineData("\"hello\" != \"world\"", true)]
+        [InlineData("\"hello\" == \"hello\"", true)]
+        [InlineData("\"hello\" != \"hello\"", false)]
         [InlineData("var a = 10", 10)]
         [InlineData("{ var a = 10 (a * a) }", 100)]
         [InlineData("{var a = 10\r\n a*a}", 100)]
@@ -111,7 +117,7 @@ namespace Orb.Tests.CodeAnalysis
             ";
 
             var diagnostics = @"
-                Cannot convert type 'System.Int32' to 'System.Boolean'.
+                Cannot convert type 'int' to 'bool'.
             ";
 
             AssertDiagnostics(text, diagnostics);
@@ -129,7 +135,7 @@ namespace Orb.Tests.CodeAnalysis
             ";
 
             var diagnostics = @"
-                Cannot convert type 'System.Boolean' to 'System.Int32'.
+                Cannot convert type 'bool' to 'int'.
             ";
 
             AssertDiagnostics(text, diagnostics);
@@ -147,7 +153,7 @@ namespace Orb.Tests.CodeAnalysis
             ";
 
             var diagnostics = @"
-                Cannot convert type 'System.Boolean' to 'System.Int32'.
+                Cannot convert type 'bool' to 'int'.
             ";
 
             AssertDiagnostics(text, diagnostics);
@@ -234,7 +240,7 @@ namespace Orb.Tests.CodeAnalysis
             ";
 
             var diagnostics = @"
-                Cannot convert type 'System.Boolean' to 'System.Int32'.
+                Cannot convert type 'bool' to 'int'.
             ";
 
             AssertDiagnostics(text, diagnostics);
@@ -246,7 +252,7 @@ namespace Orb.Tests.CodeAnalysis
             var text = @"[+]true";
 
             var diagnostics = @"
-                Unary operator '+' is not defined for type 'System.Boolean'.
+                Unary operator '+' is not defined for type 'bool'.
             ";
 
             AssertDiagnostics(text, diagnostics);
@@ -258,7 +264,7 @@ namespace Orb.Tests.CodeAnalysis
             var text = @"10 [*] false";
 
             var diagnostics = @"
-                Binary operator '*' is not defined for types 'System.Int32' and 'System.Boolean'.
+                Binary operator '*' is not defined for types 'int' and 'bool'.
             ";
 
             AssertDiagnostics(text, diagnostics);
@@ -276,7 +282,7 @@ namespace Orb.Tests.CodeAnalysis
             ";
 
             var diagnostics = @"
-                Cannot convert type 'System.Int32' to 'System.Boolean'.
+                Cannot convert type 'int' to 'bool'.
             ";
 
             AssertDiagnostics(text, diagnostics);
