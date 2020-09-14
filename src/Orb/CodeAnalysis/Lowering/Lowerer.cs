@@ -120,18 +120,16 @@ namespace Orb.CodeAnalysis.Lowering
             // <body>
             // check:
             // gotoTrue <condition> continue
-            // end:
+            // break:
             // 
 
-            var continueLabel = GenerateLabel();
             var checkLabel = GenerateLabel();
-            var endLabel = GenerateLabel();
 
             var gotoCheck = new BoundGotoStatement(checkLabel);
-            var continueLabelStatement = new BoundLabelStatement(continueLabel);
+            var continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
             var checkLabelStatement = new BoundLabelStatement(checkLabel);
-            var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition);
-            var endLabelStatement = new BoundLabelStatement(endLabel);
+            var gotoTrue = new BoundConditionalGotoStatement(node.ContinueLabel, node.Condition);
+            var breakLabelStatement = new BoundLabelStatement(node.BreakLabel);
 
             var result = new BoundBlockStatement(
                 ImmutableArray.Create<BoundStatement>(
@@ -140,7 +138,7 @@ namespace Orb.CodeAnalysis.Lowering
                     node.Body,
                     checkLabelStatement,
                     gotoTrue,
-                    endLabelStatement
+                    breakLabelStatement
                 )
             );
             return RewriteStatement(result);
@@ -157,18 +155,20 @@ namespace Orb.CodeAnalysis.Lowering
             // continue:
             // <body>
             // gotoTrue <condition> continue
+            // break:
             // 
 
-            var continueLabel = GenerateLabel();
 
-            var continueLabelStatement = new BoundLabelStatement(continueLabel);
-            var gotoTrue = new BoundConditionalGotoStatement(continueLabel, node.Condition);
+            var continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
+            var gotoTrue = new BoundConditionalGotoStatement(node.ContinueLabel, node.Condition);
+            var breakLabelStatement = new BoundLabelStatement(node.BreakLabel);
 
             var result = new BoundBlockStatement(
                 ImmutableArray.Create<BoundStatement>(
                     continueLabelStatement,
                     node.Body,
-                    gotoTrue
+                    gotoTrue,
+                    breakLabelStatement
                 )
             );
             return RewriteStatement(result);
@@ -186,6 +186,7 @@ namespace Orb.CodeAnalysis.Lowering
             //      while (<var> <= upperBound)
             //      {
             //          <body>
+            //          continue:
             //          <var> = <var> + 1
             //      }
             // }
@@ -199,6 +200,7 @@ namespace Orb.CodeAnalysis.Lowering
                 BoundBinaryOperator.Bind(SyntaxKind.LessOrEqualsToken, TypeSymbol.Int, TypeSymbol.Int),
                 new BoundVariableExpression(upperBoundSymbol)
             );
+            var continueLabelStatement = new BoundLabelStatement(node.ContinueLabel);
             var increment = new BoundExpressionStatement(
                 new BoundAssignmentExpression(
                     node.Variable,
@@ -209,8 +211,14 @@ namespace Orb.CodeAnalysis.Lowering
                     )
                 )
             );
-            var whileBody = new BoundBlockStatement(ImmutableArray.Create<BoundStatement>(node.Body, increment));
-            var whileStatement = new BoundWhileStatement(condition, whileBody);
+            var whileBody = new BoundBlockStatement(
+                ImmutableArray.Create<BoundStatement>(
+                    node.Body,
+                    continueLabelStatement,
+                    increment
+                )
+            );
+            var whileStatement = new BoundWhileStatement(condition, whileBody, node.BreakLabel, GenerateLabel());
             var result = new BoundBlockStatement(
                 ImmutableArray.Create<BoundStatement>(
                     variableDeclaration,
