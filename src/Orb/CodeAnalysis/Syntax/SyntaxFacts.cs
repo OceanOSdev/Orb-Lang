@@ -75,6 +75,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return SyntaxKind.ForKeyword;
                 case "to":
                     return SyntaxKind.ToKeyword;
+                case "do":
+                    return SyntaxKind.DoKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -168,6 +170,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return "for";
                 case SyntaxKind.ToKeyword:
                     return "to";
+                case SyntaxKind.DoKeyword:
+                    return "do";
                 default:
                     return null;
             }
