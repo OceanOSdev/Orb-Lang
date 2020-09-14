@@ -64,6 +64,7 @@ namespace Orb.Tests.CodeAnalysis
         [InlineData("true ^ false", true)]
         [InlineData("false ^ true", true)]
         [InlineData("true ^ true", false)]
+        [InlineData("\"hello\"\"world\"", "hello\"world")]
         [InlineData("\"hello\"+\"world\"", "helloworld")]
         [InlineData("\"hello\" == \"world\"", false)]
         [InlineData("\"hello\" != \"world\"", true)]
