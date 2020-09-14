@@ -85,7 +85,7 @@ namespace Orbc
                                            .Count() == 2;
             if (lastTwoLinesAreBlank)
                 return true;
-            
+
             var syntaxTree = SyntaxTree.Parse(text);
 
             // Use Statement to exclude EndOfFileToken.
@@ -114,9 +114,12 @@ namespace Orbc
 
             if (!result.Diagnostics.Any())
             {
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(result.Value);
-                Console.ResetColor();
+                if (result.Value != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine(result.Value);
+                    Console.ResetColor();
+                }
 
                 _previous = compilation; // this way unsuccessful compilations aren't chained together
             }

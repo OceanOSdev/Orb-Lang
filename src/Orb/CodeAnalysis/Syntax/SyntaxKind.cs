@@ -31,6 +31,7 @@ namespace Orb.CodeAnalysis.Syntax
         OpenBraceToken,
         CloseBraceToken,
         IdentifierToken,
+        CommaToken,
 
         // Keywords
         FalseKeyword,
@@ -62,6 +63,7 @@ namespace Orb.CodeAnalysis.Syntax
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
+        CallExpression,
     }
 
 }

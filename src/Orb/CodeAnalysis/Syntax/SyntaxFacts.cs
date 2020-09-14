@@ -148,6 +148,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return "{";
                 case SyntaxKind.CloseBraceToken:
                     return "}";
+                case SyntaxKind.CommaToken:
+                    return ",";
                 case SyntaxKind.FalseKeyword:
                     return "false";
                 case SyntaxKind.TrueKeyword:

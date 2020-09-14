@@ -20,5 +20,6 @@ namespace Orb.CodeAnalysis.Binding
         UnaryExpression,
         BinaryExpression,
         ErrorExpression,
+        CallExpression,
     }
 }
