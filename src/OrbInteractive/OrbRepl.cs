@@ -6,7 +6,7 @@ using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 using Orb.CodeAnalysis.Text;
 
-namespace Orbc
+namespace OrbInteractive
 {
     internal sealed class OrbRepl : Repl
     {
@@ -85,11 +85,11 @@ namespace Orbc
                                            .Count() == 2;
             if (lastTwoLinesAreBlank)
                 return true;
-            
+
             var syntaxTree = SyntaxTree.Parse(text);
 
-            // Use Statement to exclude EndOfFileToken.
-            if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
+            // Use Members since we need to exclude EndOfFileToken.
+            if (syntaxTree.Root.Members.Last().GetLastToken().IsMissing)
                 return false;
 
             return true;
@@ -114,16 +114,19 @@ namespace Orbc
 
             if (!result.Diagnostics.Any())
             {
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(result.Value);
-                Console.ResetColor();
+                if (result.Value != null)
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine(result.Value);
+                    Console.ResetColor();
+                }
 
                 _previous = compilation; // this way unsuccessful compilations aren't chained together
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.DarkRed;
-                foreach (var diagnostic in result.Diagnostics)
+                foreach (var diagnostic in result.Diagnostics.OrderBy(diag => diag.Span, new TextSpanComparer()))
                 {
                     var lineIndex = syntaxTree.Text.GetLineIndex(diagnostic.Span.Start);
                     var line = syntaxTree.Text.Lines[lineIndex];

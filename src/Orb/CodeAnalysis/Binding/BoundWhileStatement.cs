@@ -1,25 +1,16 @@
-using Orb.CodeAnalysis.Symbols;
-
 namespace Orb.CodeAnalysis.Binding
 {
-    internal sealed class BoundForStatement : BoundStatement
+    internal sealed class BoundDoWhileStatement : BoundStatement
     {
-        public BoundForStatement(VariableSymbol variable,
-                                 BoundExpression lowerBound,
-                                 BoundExpression upperBound,
-                                 BoundStatement body)
+        public BoundDoWhileStatement(BoundStatement body, BoundExpression condition)
         {
-            Variable = variable;
-            LowerBound = lowerBound;
-            UpperBound = upperBound;
             Body = body;
+            Condition = condition;
         }
-        
-        public override BoundNodeKind Kind => BoundNodeKind.ForStatement;
-        public VariableSymbol Variable { get; }
-        public BoundExpression LowerBound { get; }
-        public BoundExpression UpperBound { get; }
+        public override BoundNodeKind Kind => BoundNodeKind.DoWhileStatement;
+
         public BoundStatement Body { get; }
+        public BoundExpression Condition { get; }
     }
     internal sealed class BoundWhileStatement : BoundStatement
     {

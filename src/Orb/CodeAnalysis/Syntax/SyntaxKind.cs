@@ -30,7 +30,9 @@ namespace Orb.CodeAnalysis.Syntax
         CloseParenthesisToken,
         OpenBraceToken,
         CloseBraceToken,
+        ColonToken,
         IdentifierToken,
+        CommaToken,
 
         // Keywords
         FalseKeyword,
@@ -40,18 +42,25 @@ namespace Orb.CodeAnalysis.Syntax
         IfKeyword,
         ElseKeyword,
         WhileKeyword,
+        FunctionKeyword,
         ForKeyword,
         ToKeyword,
+        DoKeyword,
 
         // Nodes
         CompilationUnit,
+        GlobalStatement,
+        FunctionDeclaration,
         ElseClause,
+        TypeClause,
+        Parameter,
 
         // Statements
         BlockStatement,
         VariableDeclaration,
         IfStatement,
         WhileStatement,
+        DoWhileStatement,
         ForStatement,
         ExpressionStatement,
 
@@ -62,6 +71,6 @@ namespace Orb.CodeAnalysis.Syntax
         BinaryExpression,
         ParenthesizedExpression,
         AssignmentExpression,
+        CallExpression,
     }
-
 }

@@ -63,6 +63,18 @@ namespace Orb.CodeAnalysis
             Report(span, message);
         }
 
+        internal void ReportParameterAlreadyDeclared(TextSpan span, string parameterName)
+        {
+            var message = $"A parameter with the name '{parameterName}' already exists";
+            Report(span, message);
+        }
+
+        public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
+        {
+            var message = $"'{name}' is already declared.";
+            Report(span, message);
+        }
+
         public void ReportUndefinedName(TextSpan span, string name)
         {
             var message = $"Variable '{name}' doesn't exist.";
@@ -75,15 +87,51 @@ namespace Orb.CodeAnalysis
             Report(span, message);
         }
 
-        public void ReportVariableAlreadyDeclared(TextSpan span, string name)
+        public void ReportCannotConvertImplicitly(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
         {
-            var message = $"Variable '{name}' is already declared.";
+            var message = $"Cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)";
             Report(span, message);
         }
 
         public void ReportCannotAssign(TextSpan span, string name)
         {
             var message = $"Variable '{name}' is read-only and cannot be assigned to.";
+            Report(span, message);
+        }
+
+        public void ReportUndefinedFunction(TextSpan span, string name)
+        {
+            var message = $"Function '{name}' does not exist.";
+            Report(span, message);
+        }
+
+        public void ReportUndefinedType(TextSpan span, string name)
+        {
+            var message = $"Type '{name}' does not exist.";
+            Report(span, message);
+        }
+
+        public void ReportWrongArgumentCount(TextSpan span, string name, int expectedCount, int actualCount)
+        {
+            var message = $"Function '{name}' requires {expectedCount} arguments but was given {actualCount}.";
+            Report(span, message);
+        }
+
+        public void ReportWrongArgumentType(TextSpan span, string name, TypeSymbol expectedType, TypeSymbol actualType)
+        {
+            var message = $"Parameter '{name}' requires a value of type '{expectedType}' but was given a value of type '{actualType}'.";
+            Report(span, message);
+        }
+
+        public void ReportExpressionMustHaveValue(TextSpan span)
+        {
+            var message = "Expression must have a value.";
+            Report(span, message);
+        }
+
+        public void TEMP_ReportFUnctionsAreUnsupported(TextSpan span)
+        {
+            var message = "Functions with return values are not supported yet.";
             Report(span, message);
         }
     }

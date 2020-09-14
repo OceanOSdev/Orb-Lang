@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Orb.CodeAnalysis.Binding;
 using Orb.CodeAnalysis.Symbols;
 
@@ -7,31 +8,40 @@ namespace Orb.CodeAnalysis
 {
     internal sealed class Evaluator
     {
-        private readonly BoundBlockStatement _root;
-        private readonly Dictionary<VariableSymbol, object> _variables;
+        private readonly BoundProgram _program;
+        private readonly Dictionary<VariableSymbol, object> _globals;
+        private readonly Stack<Dictionary<VariableSymbol, object>> _locals = new Stack<Dictionary<VariableSymbol, object>>();
+        private Random _random;
 
         private object _lastValue;
 
-        public Evaluator(BoundBlockStatement root, Dictionary<VariableSymbol, object> variables)
+        public Evaluator(BoundProgram program,
+                         Dictionary<VariableSymbol, object> variables)
         {
-            _root = root;
-            _variables = variables;
+            _program = program;
+            _globals = variables;
+            _locals.Push(new Dictionary<VariableSymbol, object>());
         }
 
         public object Evaluate()
         {
+            return EvaluateStatement(_program.Statement);
+        }
+
+        public object EvaluateStatement(BoundBlockStatement body)
+        {
             var labelToIndex = new Dictionary<BoundLabel, int>();
-            for (int i = 0; i < _root.Statements.Length; i++)
+            for (int i = 0; i < body.Statements.Length; i++)
             {
-                if (_root.Statements[i] is BoundLabelStatement l)
+                if (body.Statements[i] is BoundLabelStatement l)
                     labelToIndex.Add(l.Label, i + 1);
             }
 
             int index = 0;
 
-            while (index < _root.Statements.Length)
+            while (index < body.Statements.Length)
             {
-                var s = _root.Statements[index];
+                var s = body.Statements[index];
                 switch (s.Kind)
                 {
                     case BoundNodeKind.VariableDeclaration:
@@ -68,7 +78,7 @@ namespace Orb.CodeAnalysis
         private void EvaluateVariableDeclaration(BoundVariableDeclaration node)
         {
             var value = EvaluateExpression(node.Initializer);
-            _variables[node.Variable] = value;
+            Assign(node.Variable, value);
             _lastValue = value;
         }
 
@@ -92,6 +102,10 @@ namespace Orb.CodeAnalysis
                     return EvaluateUnaryExpression((BoundUnaryExpression)node);
                 case BoundNodeKind.BinaryExpression:
                     return EvaluateBinaryExpression((BoundBinaryExpression)node);
+                case BoundNodeKind.CallExpression:
+                    return EvaluateCallExpression((BoundCallExpression)node);
+                case BoundNodeKind.ConversionExpression:
+                    return EvaluateConversionExpression((BoundConversionExpression)node);
                 default:
                     throw new Exception($"Unexpected node {node.Kind}");
             }
@@ -104,13 +118,21 @@ namespace Orb.CodeAnalysis
 
         private object EvaluateVariableExpression(BoundVariableExpression v)
         {
-            return _variables[v.Variable];
+            if (v.Variable.Kind == SymbolKind.GlobalVariable)
+            {
+                return _globals[v.Variable];
+            }
+            else
+            {
+                var locals = _locals.Peek();
+                return locals[v.Variable];
+            }
         }
 
         private object EvaluateAssignmentExpression(BoundAssignmentExpression a)
         {
             var value = EvaluateExpression(a.Expression);
-            _variables[a.Variable] = value;
+            Assign(a.Variable, value);
             return value;
         }
 
@@ -186,6 +208,72 @@ namespace Orb.CodeAnalysis
                     throw new Exception($"Unexpected binary operator {b.Op}");
             }
         }
-    }
 
+        private object EvaluateCallExpression(BoundCallExpression node)
+        {
+            if (node.Function == BuiltinFunction.Input)
+            {
+                return Console.ReadLine();
+            }
+            else if (node.Function == BuiltinFunction.Print)
+            {
+                var message = (string)EvaluateExpression(node.Arguments[0]);
+                Console.WriteLine(message);
+                return null;
+            }
+            else if (node.Function == BuiltinFunction.Rnd)
+            {
+                var max = (int)EvaluateExpression(node.Arguments[0]);
+                if (_random == null)
+                    _random = new Random();
+
+                return _random.Next(max);
+            }
+            else
+            {
+                var locals = new Dictionary<VariableSymbol, object>();
+                for (int i = 0; i < node.Arguments.Length; i++)
+                {
+                    var parameter = node.Function.Parameters[i];
+                    var value = EvaluateExpression(node.Arguments[i]);
+                    locals.Add(parameter, value);
+                }
+
+                _locals.Push(locals);
+
+                var statement = _program.Functions[node.Function];
+                var result = EvaluateStatement(statement);
+
+                _locals.Pop();
+
+                return result;
+            }
+        }
+
+        private object EvaluateConversionExpression(BoundConversionExpression node)
+        {
+            var value = EvaluateExpression(node.Expression);
+            if (node.Type == TypeSymbol.Bool)
+                return Convert.ToBoolean(value);
+            else if (node.Type == TypeSymbol.Int)
+                return Convert.ToInt32(value);
+            else if (node.Type == TypeSymbol.String)
+                return Convert.ToString(value);
+            else
+                throw new Exception($"Unexpected type {node.Type}.");
+        }
+
+        private void Assign(VariableSymbol variable, object value)
+        {
+            if (variable.Kind == SymbolKind.GlobalVariable)
+            {
+                _globals[variable] = value;
+            }
+            else
+            {
+                var locals = _locals.Peek();
+                locals[variable] = value;
+            }
+        }
+    }
 }

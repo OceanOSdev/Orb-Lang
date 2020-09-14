@@ -73,8 +73,12 @@ namespace Orb.CodeAnalysis.Syntax
                     return SyntaxKind.WhileKeyword;
                 case "for":
                     return SyntaxKind.ForKeyword;
+                case "function":
+                    return SyntaxKind.FunctionKeyword;
                 case "to":
                     return SyntaxKind.ToKeyword;
+                case "do":
+                    return SyntaxKind.DoKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -148,6 +152,10 @@ namespace Orb.CodeAnalysis.Syntax
                     return "{";
                 case SyntaxKind.CloseBraceToken:
                     return "}";
+                case SyntaxKind.ColonToken:
+                    return ":";
+                case SyntaxKind.CommaToken:
+                    return ",";
                 case SyntaxKind.FalseKeyword:
                     return "false";
                 case SyntaxKind.TrueKeyword:
@@ -164,8 +172,12 @@ namespace Orb.CodeAnalysis.Syntax
                     return "while";
                 case SyntaxKind.ForKeyword:
                     return "for";
+                case SyntaxKind.FunctionKeyword:
+                    return "function";
                 case SyntaxKind.ToKeyword:
                     return "to";
+                case SyntaxKind.DoKeyword:
+                    return "do";
                 default:
                     return null;
             }

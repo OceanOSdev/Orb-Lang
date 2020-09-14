@@ -61,9 +61,94 @@ namespace Orb.CodeAnalysis.Syntax
 
         public CompilationUnitSyntax ParseCompilationUnit()
         {
-            var statement = ParseStatement();
+            var members = ParseMembers();
             var endOfFileToken = MatchToken(SyntaxKind.EndOfFileToken);
-            return new CompilationUnitSyntax(statement, endOfFileToken);
+            return new CompilationUnitSyntax(members, endOfFileToken);
+        }
+
+        private ImmutableArray<MemberSyntax> ParseMembers()
+        {
+            var members = ImmutableArray.CreateBuilder<MemberSyntax>();
+
+            while (Current.Kind != SyntaxKind.EndOfFileToken &&
+                   Current.Kind != SyntaxKind.CloseBraceToken)
+            {
+                var startToken = Current;
+
+                var member = ParseMember();
+                members.Add(member);
+
+                // If ParseMember() did not consume any tokens,
+                // we need to skip the current token and continue
+                // in order to avoid an infinite loop.
+                //
+                // We don't need to report an error, because we'll
+                // already tried to parse an expression statement
+                // and reported one.
+                if (Current == startToken)
+                    NextToken();
+            }
+
+            return members.ToImmutable();
+        }
+
+        private MemberSyntax ParseMember()
+        {
+            if (Current.Kind == SyntaxKind.FunctionKeyword)
+                return ParseFunctionDeclaration();
+
+            return ParseGlobalStatement();
+        }
+
+        private MemberSyntax ParseFunctionDeclaration()
+        {
+            var functionKeyword = MatchToken(SyntaxKind.FunctionKeyword);
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+            var parameters = ParseParameterList();
+            var closedParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+            var type = ParseOptionalTypeClause();
+            var body = ParseBlockStatement();
+            return new FunctionDeclarationSyntax(functionKeyword, identifier, openParenthesisToken, parameters, closedParenthesisToken, type, body);
+        }
+
+        private SeparatedSyntaxList<ParameterSyntax> ParseParameterList()
+        {
+            var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+            var parseNextParameter = true;
+
+            while (parseNextParameter &&
+                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
+                   Current.Kind != SyntaxKind.EndOfFileToken)
+            {
+                var parameter = ParseParameter();
+                nodesAndSeparators.Add(parameter);
+
+                if (Current.Kind == SyntaxKind.CommaToken)
+                {
+                    var comma = MatchToken(SyntaxKind.CommaToken);
+                    nodesAndSeparators.Add(comma);
+                }
+                else
+                {
+                    parseNextParameter = false;
+                }
+            }
+
+            return new SeparatedSyntaxList<ParameterSyntax>(nodesAndSeparators.ToImmutable());
+        }
+
+        private ParameterSyntax ParseParameter()
+        {
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var type = ParseTypeClause();
+            return new ParameterSyntax(identifier, type);
+        }
+
+        private MemberSyntax ParseGlobalStatement()
+        {
+            var statement = ParseStatement();
+            return new GlobalStatementSyntax(statement);
         }
 
         private StatementSyntax ParseStatement()
@@ -79,6 +164,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return ParseIfStatement();
                 case SyntaxKind.WhileKeyword:
                     return ParseWhileStatement();
+                case SyntaxKind.DoKeyword:
+                    return ParseDoWhileStatement();
                 case SyntaxKind.ForKeyword:
                     return ParseForStatement();
                 default:
@@ -111,7 +198,7 @@ namespace Orb.CodeAnalysis.Syntax
             }
 
             var closeBraceToken = MatchToken(SyntaxKind.CloseBraceToken);
-            
+
             return new BlockStatementSyntax(openBraceToken, statements.ToImmutable(), closeBraceToken);
         }
 
@@ -120,9 +207,25 @@ namespace Orb.CodeAnalysis.Syntax
             var expected = Current.Kind == SyntaxKind.LetKeyword ? SyntaxKind.LetKeyword : SyntaxKind.VarKeyword;
             var keyword = MatchToken(expected);
             var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var typeClause = ParseOptionalTypeClause();
             var equals = MatchToken(SyntaxKind.EqualsToken);
             var initializer = ParseExpression();
-            return new VariableDeclarationSyntax(keyword, identifier, equals, initializer);
+            return new VariableDeclarationSyntax(keyword, identifier, typeClause, equals, initializer);
+        }
+
+        private TypeClauseSyntax ParseOptionalTypeClause()
+        {
+            if (Current.Kind != SyntaxKind.ColonToken)
+                return null;
+
+            return ParseTypeClause();
+        }
+
+        private TypeClauseSyntax ParseTypeClause()
+        {
+            var colon = MatchToken(SyntaxKind.ColonToken);
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            return new TypeClauseSyntax(colon, identifier);
         }
 
         private StatementSyntax ParseIfStatement()
@@ -138,7 +241,7 @@ namespace Orb.CodeAnalysis.Syntax
         {
             if (Current.Kind != SyntaxKind.ElseKeyword)
                 return null;
-            
+
             var keyword = MatchToken(SyntaxKind.ElseKeyword);
             var statement = ParseStatement();
             return new ElseClauseSyntax(keyword, statement);
@@ -150,6 +253,15 @@ namespace Orb.CodeAnalysis.Syntax
             var condition = ParseExpression();
             var body = ParseStatement();
             return new WhileStatementSyntax(keyword, condition, body);
+        }
+
+        private StatementSyntax ParseDoWhileStatement()
+        {
+            var doKeyword = MatchToken(SyntaxKind.DoKeyword);
+            var body = ParseStatement();
+            var whileKeyword = MatchToken(SyntaxKind.WhileKeyword);
+            var condition = ParseExpression();
+            return new DoWhileStatementSyntax(doKeyword, body, whileKeyword, condition);
         }
 
         private StatementSyntax ParseForStatement()
@@ -217,7 +329,6 @@ namespace Orb.CodeAnalysis.Syntax
             return left;
         }
 
-
         private ExpressionSyntax ParsePrimaryExpression()
         {
             switch (Current.Kind)
@@ -231,10 +342,10 @@ namespace Orb.CodeAnalysis.Syntax
                     return ParseNumberLiteral();
                 case SyntaxKind.StringToken:
                     return ParseStringLiteral();
-                
+
                 case SyntaxKind.IdentifierToken:
                 default:
-                    return ParseNameExpression();
+                    return ParseNameOrCallExpression();
             }
         }
 
@@ -265,11 +376,53 @@ namespace Orb.CodeAnalysis.Syntax
             return new LiteralExpressionSyntax(stringToken);
         }
 
+        private ExpressionSyntax ParseNameOrCallExpression()
+        {
+            if (Peek(0).Kind == SyntaxKind.IdentifierToken && Peek(1).Kind == SyntaxKind.OpenParenthesisToken)
+                return ParseCallExpression();
+
+            return ParseNameExpression();
+        }
+
+        private ExpressionSyntax ParseCallExpression()
+        {
+            var identifier = MatchToken(SyntaxKind.IdentifierToken);
+            var openParenthesisToken = MatchToken(SyntaxKind.OpenParenthesisToken);
+            var arguments = ParseArguments();
+            var closeParenthesisToken = MatchToken(SyntaxKind.CloseParenthesisToken);
+            return new CallExpressionSyntax(identifier, openParenthesisToken, arguments, closeParenthesisToken);
+        }
+
+        private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
+        {
+            var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+            var parseNextArgument = true;
+
+            while (parseNextArgument &&
+                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
+                   Current.Kind != SyntaxKind.EndOfFileToken)
+            {
+                var expression = ParseExpression();
+                nodesAndSeparators.Add(expression);
+
+                if (Current.Kind == SyntaxKind.CommaToken)
+                {
+                    var comma = MatchToken(SyntaxKind.CommaToken);
+                    nodesAndSeparators.Add(comma);
+                }
+                else
+                {
+                    parseNextArgument = false;
+                }
+            }
+
+            return new SeparatedSyntaxList<ExpressionSyntax>(nodesAndSeparators.ToImmutable());
+        }
+
         private ExpressionSyntax ParseNameExpression()
         {
             var identifierToken = MatchToken(SyntaxKind.IdentifierToken);
             return new NameExpressionSyntax(identifierToken);
         }
-
     }
 }

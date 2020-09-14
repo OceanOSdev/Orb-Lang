@@ -8,6 +8,7 @@ namespace Orb.CodeAnalysis.Binding
         VariableDeclaration,
         IfStatement,
         WhileStatement,
+        DoWhileStatement,
         ForStatement,
         GotoStatement,
         ConditionalGotoStatement,
@@ -20,5 +21,7 @@ namespace Orb.CodeAnalysis.Binding
         UnaryExpression,
         BinaryExpression,
         ErrorExpression,
+        CallExpression,
+        ConversionExpression,
     }
 }

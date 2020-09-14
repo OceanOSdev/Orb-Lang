@@ -19,6 +19,8 @@ namespace Orb.CodeAnalysis.Binding
                     return RewriteIfStatement((BoundIfStatement)node);
                 case BoundNodeKind.WhileStatement:
                     return RewriteWhileStatement((BoundWhileStatement)node);
+                case BoundNodeKind.DoWhileStatement:
+                    return RewriteDoWhileStatement((BoundDoWhileStatement)node);
                 case BoundNodeKind.ForStatement:
                     return RewriteForStatement((BoundForStatement)node);
                 case BoundNodeKind.LabelStatement:
@@ -104,6 +106,17 @@ namespace Orb.CodeAnalysis.Binding
             return new BoundWhileStatement(condition, body);
         }
 
+        protected virtual BoundStatement RewriteDoWhileStatement(BoundDoWhileStatement node)
+        {
+            var body = RewriteStatement(node.Body);
+            var condition = RewriteExpression(node.Condition);
+
+            if (body == node.Body && condition == node.Condition)
+                return node;
+            
+            return new BoundDoWhileStatement(body, condition);
+        }
+
         protected virtual BoundStatement RewriteForStatement(BoundForStatement node)
         {
             var lowerBound = RewriteExpression(node.LowerBound); 
@@ -153,6 +166,10 @@ namespace Orb.CodeAnalysis.Binding
                     return RewriteUnaryExpression((BoundUnaryExpression)node);
                 case BoundNodeKind.BinaryExpression:
                     return RewriteBinaryExpression((BoundBinaryExpression)node);
+                case BoundNodeKind.CallExpression:
+                    return RewriteCallExpression((BoundCallExpression)node);
+                case BoundNodeKind.ConversionExpression:
+                    return RewriteConversionExpression((BoundConversionExpression)node);
                 default:
                     throw new Exception($"Unexpected node: {node.Kind}");
             }
@@ -200,6 +217,44 @@ namespace Orb.CodeAnalysis.Binding
                 return node;
             
             return new BoundBinaryExpression(left, node.Op, right);
+        }
+
+        protected virtual BoundExpression RewriteCallExpression(BoundCallExpression node)
+        {
+            ImmutableArray<BoundExpression>.Builder builder = null;
+
+            for (int i = 0; i < node.Arguments.Length; i++)
+            {
+                var oldArgument = node.Arguments[i];
+                var newArgument = RewriteExpression(oldArgument);
+
+                if (newArgument != oldArgument)
+                {
+                    if (builder == null)
+                    {
+                        builder = ImmutableArray.CreateBuilder<BoundExpression>(node.Arguments.Length);
+                        for (int j = 0; j < i; j++)
+                            builder.Add(node.Arguments[j]);
+                    }
+                }
+
+                if (builder != null)
+                    builder.Add(newArgument);
+            }
+
+            if (builder == null)
+                return node;
+            
+            return new BoundCallExpression(node.Function, builder.MoveToImmutable());
+        }
+
+        protected virtual BoundExpression RewriteConversionExpression(BoundConversionExpression node)
+        {
+            var expression = RewriteExpression(node.Expression);
+            if (expression == node.Expression)
+                return node;
+            
+            return new BoundConversionExpression(node.Type, expression);
         }
     }
 }

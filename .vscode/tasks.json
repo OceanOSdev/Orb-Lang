@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/Orbc/Orbc.csproj"
+                "${workspaceFolder}/src/orb.sln"
             ],
             "problemMatcher": "$msCompile"
         }

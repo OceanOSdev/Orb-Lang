@@ -1,3 +1,3 @@
 @echo off
 
-dotnet run --project .\src\Orbc\Orbc.csproj
+dotnet run --project .\src\OrbInteractive\OrbInteractive.csproj

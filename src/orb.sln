@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbc", "Orbc\Orbc.csproj", "{BD9B69BF-15EA-4C48-BB0B-7771E0700FA5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrbInteractive", "OrbInteractive\OrbInteractive.csproj", "{BD9B69BF-15EA-4C48-BB0B-7771E0700FA5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orb", "Orb\Orb.csproj", "{DEAF990D-4B70-4830-8BB6-AB1BB07D8187}"
 EndProject
