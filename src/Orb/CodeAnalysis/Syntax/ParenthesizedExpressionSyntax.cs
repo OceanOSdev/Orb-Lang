@@ -4,7 +4,9 @@ namespace Orb.CodeAnalysis.Syntax
 {
     public sealed class ParenthesizedExpressionSyntax : ExpressionSyntax
     {
-        public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, ExpressionSyntax expression, SyntaxToken closedParenthesisToken)
+        public ParenthesizedExpressionSyntax(SyntaxToken openParenthesisToken, 
+                                             ExpressionSyntax expression, 
+                                             SyntaxToken closedParenthesisToken)
         {
             OpenParenthesisToken = openParenthesisToken;
             Expression = expression;

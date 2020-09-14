@@ -73,6 +73,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return SyntaxKind.WhileKeyword;
                 case "for":
                     return SyntaxKind.ForKeyword;
+                case "function":
+                    return SyntaxKind.FunctionKeyword;
                 case "to":
                     return SyntaxKind.ToKeyword;
                 case "do":
@@ -170,6 +172,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return "while";
                 case SyntaxKind.ForKeyword:
                     return "for";
+                case SyntaxKind.FunctionKeyword:
+                    return "function";
                 case SyntaxKind.ToKeyword:
                     return "to";
                 case SyntaxKind.DoKeyword:

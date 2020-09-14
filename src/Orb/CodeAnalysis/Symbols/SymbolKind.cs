@@ -3,8 +3,9 @@ namespace Orb.CodeAnalysis.Symbols
     public enum SymbolKind
     {
         Function,
-        Variable,
-        Type,
+        GlobalVariable,
+        LocalVariable,
         Parameter,
+        Type,
     }
 }

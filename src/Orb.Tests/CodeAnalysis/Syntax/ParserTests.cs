@@ -119,7 +119,7 @@ namespace Orb.Tests.CodeAnalysis.Syntax
         {
             var syntaxTree = SyntaxTree.Parse(text);
             var root = syntaxTree.Root;
-            var statement = root.Statement;
+            var statement = root.Members;
             return Assert.IsType<ExpressionStatementSyntax>(statement).Expression;
         }
 

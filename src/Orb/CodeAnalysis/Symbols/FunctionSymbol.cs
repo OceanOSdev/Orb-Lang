@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Orb.CodeAnalysis.Syntax;
 
 namespace Orb.CodeAnalysis.Symbols
 {
@@ -6,15 +7,19 @@ namespace Orb.CodeAnalysis.Symbols
     {
         public FunctionSymbol(string name, 
                               ImmutableArray<ParameterSymbol> parameters,
-                              TypeSymbol type)
+                              TypeSymbol type,
+                              FunctionDeclarationSyntax declaration = null)
             : base(name)
         {
             Parameters = parameters;
             Type = type;
+            Declaration = declaration;
         }
 
         public override SymbolKind Kind => SymbolKind.Function;
+
         public ImmutableArray<ParameterSymbol> Parameters { get; }
         public TypeSymbol Type { get; }
+        public FunctionDeclarationSyntax Declaration { get; }
     }
 }

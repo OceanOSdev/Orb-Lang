@@ -88,8 +88,8 @@ namespace Orbc
 
             var syntaxTree = SyntaxTree.Parse(text);
 
-            // Use Statement to exclude EndOfFileToken.
-            if (syntaxTree.Root.Statement.GetLastToken().IsMissing)
+            // Use Members since we need to exclude EndOfFileToken.
+            if (syntaxTree.Root.Members.Last().GetLastToken().IsMissing)
                 return false;
 
             return true;

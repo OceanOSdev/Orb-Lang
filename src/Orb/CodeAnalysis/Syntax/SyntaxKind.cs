@@ -42,14 +42,18 @@ namespace Orb.CodeAnalysis.Syntax
         IfKeyword,
         ElseKeyword,
         WhileKeyword,
+        FunctionKeyword,
         ForKeyword,
         ToKeyword,
         DoKeyword,
 
         // Nodes
         CompilationUnit,
+        GlobalStatement,
+        FunctionDeclaration,
         ElseClause,
         TypeClause,
+        Parameter,
 
         // Statements
         BlockStatement,
@@ -69,5 +73,4 @@ namespace Orb.CodeAnalysis.Syntax
         AssignmentExpression,
         CallExpression,
     }
-
 }

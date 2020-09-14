@@ -63,6 +63,18 @@ namespace Orb.CodeAnalysis
             Report(span, message);
         }
 
+        internal void ReportParameterAlreadyDeclared(TextSpan span, string parameterName)
+        {
+            var message = $"A parameter with the name '{parameterName}' already exists";
+            Report(span, message);
+        }
+
+        public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
+        {
+            var message = $"'{name}' is already declared.";
+            Report(span, message);
+        }
+
         public void ReportUndefinedName(TextSpan span, string name)
         {
             var message = $"Variable '{name}' doesn't exist.";
@@ -78,12 +90,6 @@ namespace Orb.CodeAnalysis
         public void ReportCannotConvertImplicitly(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
         {
             var message = $"Cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)";
-            Report(span, message);
-        }
-
-        public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
-        {
-            var message = $"'{name}' is already declared.";
             Report(span, message);
         }
 
@@ -120,6 +126,12 @@ namespace Orb.CodeAnalysis
         public void ReportExpressionMustHaveValue(TextSpan span)
         {
             var message = "Expression must have a value.";
+            Report(span, message);
+        }
+
+        public void TEMP_ReportFUnctionsAreUnsupported(TextSpan span)
+        {
+            var message = "Functions with return values are not supported yet.";
             Report(span, message);
         }
     }
