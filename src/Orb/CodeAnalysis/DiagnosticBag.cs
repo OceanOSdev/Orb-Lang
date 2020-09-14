@@ -75,6 +75,12 @@ namespace Orb.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportCannotConvertImplicitly(TextSpan span, TypeSymbol fromType, TypeSymbol toType)
+        {
+            var message = $"Cannot convert type '{fromType}' to '{toType}'. An explicit conversion exists (are you missing a cast?)";
+            Report(span, message);
+        }
+
         public void ReportSymbolAlreadyDeclared(TextSpan span, string name)
         {
             var message = $"'{name}' is already declared.";
@@ -90,6 +96,12 @@ namespace Orb.CodeAnalysis
         public void ReportUndefinedFunction(TextSpan span, string name)
         {
             var message = $"Function '{name}' does not exist.";
+            Report(span, message);
+        }
+
+        public void ReportUndefinedType(TextSpan span, string name)
+        {
+            var message = $"Type '{name}' does not exist.";
             Report(span, message);
         }
 

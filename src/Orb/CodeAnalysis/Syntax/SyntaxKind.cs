@@ -30,6 +30,7 @@ namespace Orb.CodeAnalysis.Syntax
         CloseParenthesisToken,
         OpenBraceToken,
         CloseBraceToken,
+        ColonToken,
         IdentifierToken,
         CommaToken,
 
@@ -48,6 +49,7 @@ namespace Orb.CodeAnalysis.Syntax
         // Nodes
         CompilationUnit,
         ElseClause,
+        TypeClause,
 
         // Statements
         BlockStatement,
