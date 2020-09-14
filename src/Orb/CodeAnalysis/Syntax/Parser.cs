@@ -115,17 +115,23 @@ namespace Orb.CodeAnalysis.Syntax
         private SeparatedSyntaxList<ParameterSyntax> ParseParameterList()
         {
             var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+            var parseNextParameter = true;
 
-            while (Current.Kind != SyntaxKind.CloseParenthesisToken &&
+            while (parseNextParameter &&
+                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
                    Current.Kind != SyntaxKind.EndOfFileToken)
             {
                 var parameter = ParseParameter();
                 nodesAndSeparators.Add(parameter);
 
-                if (Current.Kind != SyntaxKind.CloseParenthesisToken)
+                if (Current.Kind == SyntaxKind.CommaToken)
                 {
                     var comma = MatchToken(SyntaxKind.CommaToken);
                     nodesAndSeparators.Add(comma);
+                }
+                else
+                {
+                    parseNextParameter = false;
                 }
             }
 
@@ -390,17 +396,23 @@ namespace Orb.CodeAnalysis.Syntax
         private SeparatedSyntaxList<ExpressionSyntax> ParseArguments()
         {
             var nodesAndSeparators = ImmutableArray.CreateBuilder<SyntaxNode>();
+            var parseNextArgument = true;
 
-            while (Current.Kind != SyntaxKind.CloseParenthesisToken &&
+            while (parseNextArgument &&
+                   Current.Kind != SyntaxKind.CloseParenthesisToken &&
                    Current.Kind != SyntaxKind.EndOfFileToken)
             {
                 var expression = ParseExpression();
                 nodesAndSeparators.Add(expression);
 
-                if (Current.Kind != SyntaxKind.CloseParenthesisToken)
+                if (Current.Kind == SyntaxKind.CommaToken)
                 {
                     var comma = MatchToken(SyntaxKind.CommaToken);
                     nodesAndSeparators.Add(comma);
+                }
+                else
+                {
+                    parseNextArgument = false;
                 }
             }
 
