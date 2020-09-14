@@ -53,6 +53,12 @@ namespace Orbc
                     _showProgram = !_showProgram;
                     Console.WriteLine(_showProgram ? "Showing bound tree." : "Not showing bound tree.");
                     break;
+                case "#showTrees":
+                    var display = _showProgram || _showTree;
+                    _showTree = !display;
+                    _showProgram = !display;
+                    Console.WriteLine(!display ? "Showing parse and bound tree." : "Not showing parse and bound tree.");
+                    break;
                 case "#cls":
                     Console.Clear();
                     break;
