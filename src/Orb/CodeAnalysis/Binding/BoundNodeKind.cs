@@ -13,6 +13,7 @@ namespace Orb.CodeAnalysis.Binding
         GotoStatement,
         ConditionalGotoStatement,
         LabelStatement,
+        ReturnStatement,
 
         // Expressions
         LiteralExpression,
