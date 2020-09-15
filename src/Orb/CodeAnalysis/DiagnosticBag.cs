@@ -141,6 +141,12 @@ namespace Orb.CodeAnalysis
             Report(span, message);
         }
 
+        public void ReportAllPathsMustReturn(TextSpan span)
+        {
+            var message = "Not all code paths return a value.";
+            Report(span, message);
+        }
+        
         public void ReportInvalidReturnExpression(TextSpan span, string functionName)
         {
             var message = $"Since '{functionName}' returns void, a return keyword must not be followed by an expression";
