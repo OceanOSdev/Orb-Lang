@@ -78,7 +78,7 @@ namespace Orb.CodeAnalysis.Binding
 
                     if (function.Type != TypeSymbol.Void && !ControlFlowGraph.AllPathsReturn(loweredBody))
                         binder._diagnostics.ReportAllPathsMustReturn(function.Declaration.Identifier.Span);
-                        
+
                     functionBodies.Add(function, loweredBody);
 
                     diagnostics.AddRange(binder.Diagnostics);
@@ -116,7 +116,8 @@ namespace Orb.CodeAnalysis.Binding
             var type = BindTypeClause(syntax.Type) ?? TypeSymbol.Void;
 
             var function = new FunctionSymbol(syntax.Identifier.Text, parameters.ToImmutable(), type, syntax);
-            if (!_scope.TryDeclareFunction(function))
+            if (function.Declaration.Identifier.Text != null &&
+                !_scope.TryDeclareFunction(function))
                 _diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Span, function.Name);
         }
 

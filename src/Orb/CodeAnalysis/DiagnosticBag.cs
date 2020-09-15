@@ -65,7 +65,7 @@ namespace Orb.CodeAnalysis
 
         internal void ReportParameterAlreadyDeclared(TextSpan span, string parameterName)
         {
-            var message = $"A parameter with the name '{parameterName}' already exists";
+            var message = $"A parameter with the name '{parameterName}' already exists.";
             Report(span, message);
         }
 
@@ -131,13 +131,13 @@ namespace Orb.CodeAnalysis
 
         public void ReportInvalidBreakOrContinue(TextSpan span, string text)
         {
-            var message = $"The keyword {text} can only be used inside of loops.";
+            var message = $"The keyword '{text}' can only be used inside of loops.";
             Report(span, message);
         }
 
         public void ReportInvalidReturn(TextSpan span)
         {
-            var message = "The 'return' keyword can only be used inside of function.";
+            var message = "The 'return' keyword can only be used inside of functions.";
             Report(span, message);
         }
 
@@ -146,10 +146,10 @@ namespace Orb.CodeAnalysis
             var message = "Not all code paths return a value.";
             Report(span, message);
         }
-        
+
         public void ReportInvalidReturnExpression(TextSpan span, string functionName)
         {
-            var message = $"Since '{functionName}' returns void, a return keyword must not be followed by an expression";
+            var message = $"Since '{functionName}' returns void, a return keyword must not be followed by an expression.";
             Report(span, message);
         }
 
