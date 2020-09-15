@@ -1,20 +1,12 @@
 namespace Orb.CodeAnalysis.Binding
 {
-    internal sealed class BoundDoWhileStatement : BoundStatement
+    internal sealed class BoundWhileStatement : BoundLoopStatement
     {
-        public BoundDoWhileStatement(BoundStatement body, BoundExpression condition)
-        {
-            Body = body;
-            Condition = condition;
-        }
-        public override BoundNodeKind Kind => BoundNodeKind.DoWhileStatement;
-
-        public BoundStatement Body { get; }
-        public BoundExpression Condition { get; }
-    }
-    internal sealed class BoundWhileStatement : BoundStatement
-    {
-        public BoundWhileStatement(BoundExpression condition, BoundStatement body)
+        public BoundWhileStatement(BoundExpression condition, 
+                                   BoundStatement body, 
+                                   BoundLabel breakLabel, 
+                                   BoundLabel continueLabel)
+            : base(breakLabel, continueLabel)
         {
             Condition = condition;
             Body = body;

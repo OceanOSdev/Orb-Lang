@@ -79,6 +79,10 @@ namespace Orb.CodeAnalysis.Syntax
                     return SyntaxKind.ToKeyword;
                 case "do":
                     return SyntaxKind.DoKeyword;
+                case "break":
+                    return SyntaxKind.BreakKeyword;
+                case "continue":
+                    return SyntaxKind.ContinueKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -178,6 +182,10 @@ namespace Orb.CodeAnalysis.Syntax
                     return "to";
                 case SyntaxKind.DoKeyword:
                     return "do";
+                case SyntaxKind.BreakKeyword:
+                    return "break";
+                case SyntaxKind.ContinueKeyword:
+                    return "continue";
                 default:
                     return null;
             }

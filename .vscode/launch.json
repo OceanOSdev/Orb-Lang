@@ -10,9 +10,9 @@
              "request": "launch",
              "preLaunchTask": "build",
              // If you have changed target frameworks, make sure to update the program path.
-             "program": "${workspaceFolder}/src/Orbc/bin/Debug/netcoreapp2.1/Orbc.dll",
+             "program": "${workspaceFolder}/src/OrbInteractive/bin/Debug/netcoreapp2.1/OrbInteractive.dll",
              "args": [],
-             "cwd": "${workspaceFolder}/src/Orbc",
+             "cwd": "${workspaceFolder}/src/OrbInteractive",
              // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window
              "console": "externalTerminal",
              "stopAtEntry": false,
