@@ -83,6 +83,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return SyntaxKind.BreakKeyword;
                 case "continue":
                     return SyntaxKind.ContinueKeyword;
+                case "return":
+                    return SyntaxKind.ReturnKeyword;
                 default:
                     return SyntaxKind.IdentifierToken;
             }
@@ -178,6 +180,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return "for";
                 case SyntaxKind.FunctionKeyword:
                     return "function";
+                case SyntaxKind.ReturnKeyword:
+                    return "return";
                 case SyntaxKind.ToKeyword:
                     return "to";
                 case SyntaxKind.DoKeyword:

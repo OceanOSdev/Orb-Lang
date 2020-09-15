@@ -48,6 +48,7 @@ namespace Orb.CodeAnalysis.Syntax
         DoKeyword,
         BreakKeyword,
         ContinueKeyword,
+        ReturnKeyword,
 
         // Nodes
         CompilationUnit,
@@ -66,6 +67,7 @@ namespace Orb.CodeAnalysis.Syntax
         ForStatement,
         BreakStatement,
         ContinueStatement,
+        ReturnStatement,
         ExpressionStatement,
 
         // Expressions

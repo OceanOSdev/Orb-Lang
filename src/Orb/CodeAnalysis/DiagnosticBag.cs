@@ -140,5 +140,23 @@ namespace Orb.CodeAnalysis
             var message = "Functions with return values are not supported yet.";
             Report(span, message);
         }
+
+        public void ReportInvalidReturn(TextSpan span)
+        {
+            var message = "The 'return' keyword can only be used inside of function.";
+            Report(span, message);
+        }
+
+        public void ReportInvalidReturnExpression(TextSpan span, string functionName)
+        {
+            var message = $"Since '{functionName}' returns void, a return keyword must not be followed by an expression";
+            Report(span, message);
+        }
+
+        public void ReportMissingReturnExpression(TextSpan span, TypeSymbol returnType)
+        {
+            var message = $"Expression of type '{returnType}' expected.";
+            Report(span, message);
+        }
     }
 }
