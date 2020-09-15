@@ -42,7 +42,7 @@ namespace Orb.CodeAnalysis.Binding
 
             foreach (var function in syntax.Members.OfType<FunctionDeclarationSyntax>())
                 binder.BindFunctionDeclaration(function);
-            
+
             var statements = ImmutableArray.CreateBuilder<BoundStatement>();
 
             foreach (var globalStatement in syntax.Members.OfType<GlobalStatementSyntax>())
@@ -57,7 +57,7 @@ namespace Orb.CodeAnalysis.Binding
 
             if (previous != null)
                 diagnostics = diagnostics.InsertRange(0, previous.Diagnostics);
-            
+
             return new BoundGlobalScope(previous, diagnostics, functions, variables, statements.ToImmutable());
         }
 
@@ -66,7 +66,7 @@ namespace Orb.CodeAnalysis.Binding
             var parentScope = CreateParentScope(globalScope);
             var functionBodies = ImmutableDictionary.CreateBuilder<FunctionSymbol, BoundBlockStatement>();
             var diagnostics = ImmutableArray.CreateBuilder<Diagnostic>();
-            
+
             var scope = globalScope;
             while (scope != null)
             {
@@ -112,7 +112,7 @@ namespace Orb.CodeAnalysis.Binding
             var type = BindTypeClause(syntax.Type) ?? TypeSymbol.Void;
             if (type != TypeSymbol.Void)
                 _diagnostics.TEMP_ReportFUnctionsAreUnsupported(syntax.Type.Span);
-            
+
             var function = new FunctionSymbol(syntax.Identifier.Text, parameters.ToImmutable(), type, syntax);
             if (!_scope.TryDeclareFunction(function))
                 _diagnostics.ReportSymbolAlreadyDeclared(syntax.Identifier.Span, function.Name);
@@ -133,7 +133,7 @@ namespace Orb.CodeAnalysis.Binding
             {
                 previous = stack.Pop();
                 var scope = new BoundScope(parent);
-                
+
                 foreach (var f in previous.Functions)
                     scope.TryDeclareFunction(f);
 
@@ -152,7 +152,7 @@ namespace Orb.CodeAnalysis.Binding
 
             foreach (var func in BuiltinFunction.GetAll())
                 result.TryDeclareFunction(func);
-            
+
             return result;
         }
 
@@ -217,11 +217,11 @@ namespace Orb.CodeAnalysis.Binding
         {
             if (syntax == null)
                 return null;
-            
+
             var type = LookupType(syntax.Identifier.Text);
             if (type == null)
                 _diagnostics.ReportUndefinedType(syntax.Identifier.Span, syntax.Identifier.Text);
-            
+
             return type;
         }
 
@@ -450,10 +450,29 @@ namespace Orb.CodeAnalysis.Binding
 
             if (syntax.Arguments.Count != function.Parameters.Length)
             {
-                _diagnostics.ReportWrongArgumentCount(syntax.Span, function.Name, function.Parameters.Length, syntax.Arguments.Count);
+                TextSpan span;
+
+                if (syntax.Arguments.Count > function.Parameters.Length)
+                {
+                    SyntaxNode firstExceedingNode;
+                    if (function.Parameters.Length > 0)
+                        firstExceedingNode = syntax.Arguments.GetSeparator(function.Parameters.Length - 1);
+                    else
+                        firstExceedingNode = syntax.Arguments[0];
+
+                    var lastExceedingArgument = syntax.Arguments[syntax.Arguments.Count - 1];
+                    span = TextSpan.FromBounds(firstExceedingNode.Span.Start, lastExceedingArgument.Span.End);
+                }
+                else
+                {
+                    span = syntax.CloseParenthesisToken.Span;
+                }
+
+                _diagnostics.ReportWrongArgumentCount(span, function.Name, function.Parameters.Length, syntax.Arguments.Count);
                 return new BoundErrorExpression();
             }
 
+            var hasErrors = false;
             for (int i = 0; i < syntax.Arguments.Count; i++)
             {
                 var argument = boundArguments[i];
@@ -461,25 +480,30 @@ namespace Orb.CodeAnalysis.Binding
 
                 if (argument.Type != parameter.Type)
                 {
-                    _diagnostics.ReportWrongArgumentType(syntax.Arguments[i].Span, parameter.Name, parameter.Type, argument.Type);
-                    return new BoundErrorExpression();
+                    if (argument.Type != TypeSymbol.Error)
+                        _diagnostics.ReportWrongArgumentType(syntax.Arguments[i].Span, parameter.Name, parameter.Type, argument.Type);
+
+                    hasErrors = true;
                 }
             }
+
+            if (hasErrors)
+                return new BoundErrorExpression();
 
             return new BoundCallExpression(function, boundArguments.ToImmutable());
         }
 
-        private BoundExpression BindConversion(ExpressionSyntax syntax, 
-                                               TypeSymbol type, 
+        private BoundExpression BindConversion(ExpressionSyntax syntax,
+                                               TypeSymbol type,
                                                bool allowExplicit = false)
         {
             var expression = BindExpression(syntax);
             return BindConversion(syntax.Span, expression, type, allowExplicit);
         }
 
-        private BoundExpression BindConversion(TextSpan diagnosticSpan, 
-                                               BoundExpression expression, 
-                                               TypeSymbol type, 
+        private BoundExpression BindConversion(TextSpan diagnosticSpan,
+                                               BoundExpression expression,
+                                               TypeSymbol type,
                                                bool allowExplicit = false)
         {
             var conversion = Conversion.Classify(expression.Type, type);
@@ -514,18 +538,18 @@ namespace Orb.CodeAnalysis.Binding
 
             return variable;
         }
-    
+
         private TypeSymbol LookupType(string name)
         {
             switch (name)
             {
-                case "bool": 
+                case "bool":
                     return TypeSymbol.Bool;
-                case "int": 
+                case "int":
                     return TypeSymbol.Int;
-                case "string": 
+                case "string":
                     return TypeSymbol.String;
-                default: 
+                default:
                     return null;
             }
         }
