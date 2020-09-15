@@ -135,12 +135,6 @@ namespace Orb.CodeAnalysis
             Report(span, message);
         }
 
-        public void TEMP_ReportFUnctionsAreUnsupported(TextSpan span)
-        {
-            var message = "Functions with return values are not supported yet.";
-            Report(span, message);
-        }
-
         public void ReportInvalidReturn(TextSpan span)
         {
             var message = "The 'return' keyword can only be used inside of function.";
