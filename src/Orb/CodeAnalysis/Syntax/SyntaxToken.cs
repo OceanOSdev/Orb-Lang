@@ -13,7 +13,12 @@ namespace Orb.CodeAnalysis.Syntax
         public bool IsMissing => Text == null;
         public override TextSpan Span => new TextSpan(Position, Text?.Length ?? 0);
 
-        public SyntaxToken(SyntaxKind kind, int position, string text, object value)
+        public SyntaxToken(SyntaxTree syntaxTree,
+                           SyntaxKind kind, 
+                           int position, 
+                           string text, 
+                           object value)
+            : base(syntaxTree)
         {
             Kind = kind;
             Position = position;

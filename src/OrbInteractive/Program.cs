@@ -1,4 +1,4 @@
-﻿namespace OrbInteractive
+﻿namespace Orb
 {
     internal static class Program
     {

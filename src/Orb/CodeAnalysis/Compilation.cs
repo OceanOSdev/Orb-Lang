@@ -14,19 +14,19 @@ namespace Orb.CodeAnalysis
     public sealed class Compilation
     {
         private BoundGlobalScope _globalScope;
-        public Compilation(SyntaxTree syntaxTree)
-            : this(null, syntaxTree)
+        public Compilation(params SyntaxTree[] syntaxTrees)
+            : this(null, syntaxTrees)
         {
         }
 
-        private Compilation(Compilation previous, SyntaxTree syntaxTree)
+        private Compilation(Compilation previous, params SyntaxTree[] syntaxTrees)
         {
             Previous = previous;
-            SyntaxTree = syntaxTree;
+            SyntaxTrees = syntaxTrees.ToImmutableArray();
         }
 
         public Compilation Previous { get; }
-        public SyntaxTree SyntaxTree { get; }
+        public ImmutableArray<SyntaxTree> SyntaxTrees { get; }
 
         internal BoundGlobalScope GlobalScope
         {
@@ -34,7 +34,7 @@ namespace Orb.CodeAnalysis
             {
                 if (_globalScope == null)
                 {
-                    var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTree.Root);
+                    var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTrees);
                     Interlocked.CompareExchange(ref _globalScope, globalScope, null);
                 }
                 return _globalScope;
@@ -46,9 +46,16 @@ namespace Orb.CodeAnalysis
             return new Compilation(this, syntaxTree);
         }
 
+        public EvaluationResult Evaluate()
+        {
+            return Evaluate(new Dictionary<VariableSymbol, object>());
+        }
+
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
-            var diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
+            var parseDiagnostics = SyntaxTrees.SelectMany(st => st.Diagnostics);
+
+            var diagnostics = parseDiagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
 

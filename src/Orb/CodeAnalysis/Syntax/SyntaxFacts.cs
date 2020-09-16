@@ -26,6 +26,7 @@ namespace Orb.CodeAnalysis.Syntax
             {
                 case SyntaxKind.StarToken:
                 case SyntaxKind.SlashToken:
+                case SyntaxKind.PercentToken:
                     return 5;
 
                 case SyntaxKind.PlusToken:
@@ -122,6 +123,8 @@ namespace Orb.CodeAnalysis.Syntax
                     return "*";
                 case SyntaxKind.SlashToken:
                     return "/";
+                case SyntaxKind.PercentToken:
+                    return "%";
                 case SyntaxKind.BangToken:
                     return "!";
                 case SyntaxKind.TildeToken:

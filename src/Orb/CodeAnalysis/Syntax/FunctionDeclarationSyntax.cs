@@ -2,13 +2,15 @@ namespace Orb.CodeAnalysis.Syntax
 {
     public sealed class FunctionDeclarationSyntax : MemberSyntax
     {
-        public FunctionDeclarationSyntax(SyntaxToken functionKeyword,
+        public FunctionDeclarationSyntax(SyntaxTree syntaxTree,
+                                         SyntaxToken functionKeyword,
                                          SyntaxToken identifier,
                                          SyntaxToken openParenthesisToken,
                                          SeparatedSyntaxList<ParameterSyntax> parameters,
                                          SyntaxToken closedParenthesisToken,
                                          TypeClauseSyntax type,
                                          BlockStatementSyntax body)
+            : base(syntaxTree)
         {
             FunctionKeyword = functionKeyword;
             Identifier = identifier;

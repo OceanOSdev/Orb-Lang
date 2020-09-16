@@ -2,13 +2,15 @@ namespace Orb.CodeAnalysis.Syntax
 {
     public sealed class ForStatementSyntax : StatementSyntax
     {
-        public ForStatementSyntax(SyntaxToken forKeyword,
+        public ForStatementSyntax(SyntaxTree syntaxTree,
+                                  SyntaxToken forKeyword,
                                   SyntaxToken identifier,
                                   SyntaxToken equalsToken,
                                   ExpressionSyntax lowerBound,
                                   SyntaxToken toKeyword,
                                   ExpressionSyntax upperBound,
                                   StatementSyntax body)
+            : base (syntaxTree)
         {
             ForKeyword = forKeyword;
             Identifier = identifier;

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using Orb.CodeAnalysis.Binding;
 using Orb.CodeAnalysis.Symbols;
 
@@ -177,6 +176,8 @@ namespace Orb.CodeAnalysis
                     return (int)left * (int)right;
                 case BoundBinaryOperatorKind.Division:
                     return (int)left / (int)right;
+                case BoundBinaryOperatorKind.Modulo:
+                    return (int)left % (int)right;
                 case BoundBinaryOperatorKind.LogicalAnd:
                     return (bool)left && (bool)right;
                 case BoundBinaryOperatorKind.LogicalOr:
@@ -220,6 +221,12 @@ namespace Orb.CodeAnalysis
                 return Console.ReadLine();
             }
             else if (node.Function == BuiltinFunction.Print)
+            {
+                var message = (string)EvaluateExpression(node.Arguments[0]);
+                Console.Write(message); //TODO: fix bug in REPL that causes this to only print after being followed by a "printLn" call
+                return null;
+            }
+            else if (node.Function == BuiltinFunction.PrintLine)
             {
                 var message = (string)EvaluateExpression(node.Arguments[0]);
                 Console.WriteLine(message);
