@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Orb.CodeAnalysis;
@@ -17,23 +18,27 @@ namespace Orb
                 return;
             }
 
-            if (args.Length > 1)
+            var paths = GetFilePaths(args);
+            var syntaxTrees = new List<SyntaxTree>();
+            var hasErrors = false;
+
+            foreach (var path in paths)
             {
-                Console.Error.WriteLine("Error: only one path supported.");
-                return;
+                if (!File.Exists(path))
+                {
+                    Console.Error.WriteLine($"Error: file '{path}' does not exist.");
+                    hasErrors = true;
+                    continue;
+                }
+
+                var syntaxTree = SyntaxTree.Load(path);
+                syntaxTrees.Add(syntaxTree);
             }
 
-            var path = args.Single();
-
-            if (!File.Exists(path))
-            {
-                Console.Error.WriteLine($"Error: file '{path}' does not exist.");
+            if (hasErrors)
                 return;
-            }
 
-            var syntaxTree = SyntaxTree.Load(path);
-
-            var compilation = new Compilation(syntaxTree);
+            var compilation = new Compilation(syntaxTrees.ToArray());
             var result = compilation.Evaluate();
 
             if (!result.Diagnostics.Any())
@@ -45,6 +50,25 @@ namespace Orb
             {
                 Console.Error.WriteDiagnostics(result.Diagnostics);
             }
+        }
+
+        private static IEnumerable<string> GetFilePaths(IEnumerable<string> paths)
+        {
+            var result = new SortedSet<string>();
+
+            foreach (var path in paths)
+            {
+                if (Directory.Exists(path))
+                {
+                    result.UnionWith(Directory.EnumerateFiles(path, "*.orb", SearchOption.AllDirectories));
+                }
+                else
+                {
+                    result.Add(path);
+                }
+            }
+
+            return result;
         }
     }
 }

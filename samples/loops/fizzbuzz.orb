@@ -1,11 +1,14 @@
-for i = 1 to 30
+function fizzbuzz(n: int)
 {
-    if (i % 15 == 0)
-        printLn("fizzbuzz")
-    else if (i % 3 == 0)
-        printLn("fizz")
-    else if (i % 5 == 0)
-        printLn("buzz")
-    else
-        printLn(string(i))
+    for i = 1 to 30
+    {
+        if (i % 15 == 0)
+            printLn("fizzbuzz")
+        else if (i % 3 == 0)
+            printLn("fizz")
+        else if (i % 5 == 0)
+            printLn("buzz")
+        else
+            printLn(string(i))
+    }
 }

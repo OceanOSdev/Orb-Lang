@@ -1,0 +1,13 @@
+print("Please enter a number: ")
+
+let in : string = input()
+let num : int = int(in)
+
+printLn("fizzbuzz of " + in)
+printLn("=================")
+fizzbuzz(num)
+printLn("=================")
+
+print("fib(" + in + ") = ")
+let fibN : int = fib(num)
+printLn(string(fibN))

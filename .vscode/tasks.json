@@ -20,7 +20,7 @@
                 "--project",
                 "${workspaceFolder}/src/OrbCompiler/OrbCompiler.csproj",
                 "--",
-                "${file}"
+                "${fileDirname}}"
             ],
             "presentation": {
                 "echo": true,
