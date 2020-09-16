@@ -10,6 +10,19 @@
                 "${workspaceFolder}/src/orb.sln"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "orbc",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "run",
+                "--project",
+                "${workspaceFolder}/src/OrbCompiler/OrbCompiler.csproj",
+                "--",
+                "${file}"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
