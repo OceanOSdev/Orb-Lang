@@ -196,7 +196,7 @@ namespace Orb.CodeAnalysis.Syntax
                 // we need to skip the current token and continue
                 // in order to avoid an infinite loop.
                 //
-                // We don't need to report an error, because we'll
+                // We don't need to report an error, because we've
                 // already tried to parse an expression statement
                 // and reported one.
                 if (Current == startToken)

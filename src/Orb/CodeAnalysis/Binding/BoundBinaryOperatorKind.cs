@@ -6,6 +6,7 @@ namespace Orb.CodeAnalysis.Binding
         Subtraction,
         Multiplication,
         Division,
+        Modulo,
         LogicalAnd,
         LogicalOr,
         BitwiseAnd,

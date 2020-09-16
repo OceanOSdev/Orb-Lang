@@ -12,6 +12,7 @@ namespace Orb.CodeAnalysis.Syntax
         MinusToken,
         StarToken,
         SlashToken,
+        PercentToken,
         BangToken,
         EqualsToken,
         TildeToken,

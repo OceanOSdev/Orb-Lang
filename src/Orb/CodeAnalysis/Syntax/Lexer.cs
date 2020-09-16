@@ -59,6 +59,10 @@ namespace Orb.CodeAnalysis.Syntax
                     _kind = SyntaxKind.SlashToken;
                     _position++;
                     break;
+                case '%':
+                    _kind = SyntaxKind.PercentToken;
+                    _position++;
+                    break;
                 case '(':
                     _kind = SyntaxKind.OpenParenthesisToken;
                     _position++;
