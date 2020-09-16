@@ -25,8 +25,13 @@ namespace Orb
 
             var path = args.Single();
 
-            var text = File.ReadAllText(path);
-            var syntaxTree = SyntaxTree.Parse(text);
+            if (!File.Exists(path))
+            {
+                Console.Error.WriteLine($"Error: file '{path}' does not exist.");
+                return;
+            }
+
+            var syntaxTree = SyntaxTree.Load(path);
 
             var compilation = new Compilation(syntaxTree);
             var result = compilation.Evaluate();
@@ -38,7 +43,7 @@ namespace Orb
             }
             else
             {
-                Console.Error.WriteDiagnostics(result.Diagnostics, syntaxTree);
+                Console.Error.WriteDiagnostics(result.Diagnostics);
             }
         }
     }

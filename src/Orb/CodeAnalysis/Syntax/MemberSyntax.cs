@@ -4,5 +4,10 @@ namespace Orb.CodeAnalysis.Syntax
     // TODO: maybe rename this to CompilationUnitMemberSyntax
     public abstract class MemberSyntax : SyntaxNode
     {
+        protected MemberSyntax(SyntaxTree syntaxTree)
+            : base(syntaxTree)
+        {
+
+        }
     }
 }

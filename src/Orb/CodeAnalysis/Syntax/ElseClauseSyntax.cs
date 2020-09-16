@@ -2,7 +2,10 @@ namespace Orb.CodeAnalysis.Syntax
 {
     public sealed class ElseClauseSyntax : StatementSyntax
     {
-        public ElseClauseSyntax(SyntaxToken elseKeyword, StatementSyntax elseStatement)
+        public ElseClauseSyntax(SyntaxTree syntaxTree,
+                                SyntaxToken elseKeyword, 
+                                StatementSyntax elseStatement)
+            : base(syntaxTree)
         {
             ElseKeyword = elseKeyword;
             ElseStatement = elseStatement;

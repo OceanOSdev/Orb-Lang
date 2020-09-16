@@ -649,7 +649,7 @@ namespace Orb.Tests.CodeAnalysis
                 Assert.Equal(expectedMessage, actualMessage);
 
                 var expectedSpan = annotatedText.Spans[i];
-                var actualSpan = result.Diagnostics[i].Span;
+                var actualSpan = result.Diagnostics[i].Location.Span;
                 Assert.Equal(expectedSpan, actualSpan);
             }
         }
