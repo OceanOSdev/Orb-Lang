@@ -46,6 +46,11 @@ namespace Orb.CodeAnalysis
             return new Compilation(this, syntaxTree);
         }
 
+        public EvaluationResult Evaluate()
+        {
+            return Evaluate(new Dictionary<VariableSymbol, object>());
+        }
+
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
         {
             var diagnostics = SyntaxTree.Diagnostics.Concat(GlobalScope.Diagnostics).ToImmutableArray();

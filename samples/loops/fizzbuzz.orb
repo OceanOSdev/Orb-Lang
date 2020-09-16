@@ -1,0 +1,11 @@
+for i = 1 to 30
+{
+    if ((i/15)*15 == i)
+        printLn("fizzbuzz")
+    else if ((i/3)*3 == i)
+        printLn("fizz")
+    else if ((i/5)*5 == i)
+        printLn("buzz")
+    else
+        printLn(string(i))
+}
