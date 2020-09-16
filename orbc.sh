@@ -1,3 +1,3 @@
 #!/bin/bash
 
-dotnet run --project ./src/OrbCompiler/OrbCompiler.csproj
+dotnet run --project ./src/OrbCompiler/OrbCompiler.csproj -- "$@"
