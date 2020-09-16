@@ -10,12 +10,12 @@ namespace Orb
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
-            if (args.Length == 0)
+            if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
             {
                 Console.Error.WriteLine("Usage: orbc <source-paths>");
-                return;
+                return 1;
             }
 
             var paths = GetFilePaths(args);
@@ -36,7 +36,7 @@ namespace Orb
             }
 
             if (hasErrors)
-                return;
+                return 1;
 
             var compilation = new Compilation(syntaxTrees.ToArray());
             var result = compilation.Evaluate();
@@ -50,6 +50,8 @@ namespace Orb
             {
                 Console.Error.WriteDiagnostics(result.Diagnostics);
             }
+
+            return 0;
         }
 
         private static IEnumerable<string> GetFilePaths(IEnumerable<string> paths)
