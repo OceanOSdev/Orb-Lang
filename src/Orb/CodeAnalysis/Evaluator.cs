@@ -222,6 +222,12 @@ namespace Orb.CodeAnalysis
             else if (node.Function == BuiltinFunction.Print)
             {
                 var message = (string)EvaluateExpression(node.Arguments[0]);
+                Console.Write(message); //TODO: fix bug in REPL that causes this to only print after being followed by a "printLn" call
+                return null;
+            }
+            else if (node.Function == BuiltinFunction.PrintLine)
+            {
+                var message = (string)EvaluateExpression(node.Arguments[0]);
                 Console.WriteLine(message);
                 return null;
             }

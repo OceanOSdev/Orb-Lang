@@ -62,8 +62,6 @@ namespace OrbInteractive
                 case "#cls":
                     Console.Clear();
                     break;
-                case "#exit":
-                    break;
                 case "#reset":
                     _previous = null;
                     break;

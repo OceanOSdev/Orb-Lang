@@ -13,6 +13,12 @@ namespace Orb.CodeAnalysis.Symbols
                 ImmutableArray.Create(new ParameterSymbol("text", TypeSymbol.String)),
                 TypeSymbol.Void
             );
+        public static readonly FunctionSymbol PrintLine = 
+            new FunctionSymbol(
+                "printLn", 
+                ImmutableArray.Create(new ParameterSymbol("text", TypeSymbol.String)),
+                TypeSymbol.Void
+            );
         public static readonly FunctionSymbol Input =
             new FunctionSymbol(
                 "input",
