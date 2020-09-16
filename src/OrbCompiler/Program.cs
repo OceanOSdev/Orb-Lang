@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Orb.CodeAnalysis;
 using Orb.CodeAnalysis.Syntax;
+using Orb.IO;
 
 namespace Orb
 {
@@ -29,7 +30,16 @@ namespace Orb
 
             var compilation = new Compilation(syntaxTree);
             var result = compilation.Evaluate();
-            
+
+            if (!result.Diagnostics.Any())
+            {
+                if (result.Value != null)
+                    Console.WriteLine(result.Value);
+            }
+            else
+            {
+                Console.Error.WriteDiagnostics(result.Diagnostics, syntaxTree);
+            }
         }
     }
 }
