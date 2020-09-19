@@ -102,6 +102,23 @@ namespace Orb
             EvaluateSubmission(text);
         }
 
+        [MetaCommand("ls", "Lists all symbols")]
+        private void EvaluateLs()
+        {
+            if (_previous == null)
+                return;
+            
+            var symbols = _previous.GetSymbols()
+                                   .OrderBy(s => s.Kind)
+                                   .ThenBy(s => s.Name);
+            
+            foreach (var symbol in symbols)
+            {
+                symbol.WriteTo(Console.Out);
+                Console.WriteLine();
+            }
+        }
+
         protected override bool IsCompleteSubmission(string text)
         {
             if (string.IsNullOrEmpty(text))
