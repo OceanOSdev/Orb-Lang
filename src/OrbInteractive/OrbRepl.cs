@@ -85,6 +85,23 @@ namespace Orb
             Console.WriteLine(!display ? "Showing parse and bound tree." : "Not showing parse and bound tree.");
         }
 
+        [MetaCommand("load", "Loads a script file")]
+        private void EvaluateLoad(string path)
+        {
+            path = Path.GetFullPath(path);
+
+            if (!File.Exists(path))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"ERROR: File does not exist '{path}'");
+                Console.ResetColor();
+                return;
+            }
+
+            var text = File.ReadAllText(path);
+            EvaluateSubmission(text);
+        }
+
         protected override bool IsCompleteSubmission(string text)
         {
             if (string.IsNullOrEmpty(text))
