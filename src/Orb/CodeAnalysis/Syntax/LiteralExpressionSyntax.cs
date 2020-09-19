@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Orb.CodeAnalysis.Syntax
 {
     public sealed class LiteralExpressionSyntax : ExpressionSyntax

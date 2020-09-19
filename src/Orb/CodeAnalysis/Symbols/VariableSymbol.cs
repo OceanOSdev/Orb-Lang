@@ -1,5 +1,3 @@
-using System;
-
 namespace Orb.CodeAnalysis.Symbols
 {
     public abstract class VariableSymbol : Symbol
