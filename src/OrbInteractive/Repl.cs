@@ -2,14 +2,42 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 namespace Orb
 {
     internal abstract class Repl
     {
+        private readonly List<MetaCommand> _metaCommands = new List<MetaCommand>();
         private readonly List<string> _submissionHistory = new List<string>();
         private int _submissionHistoryIndex;
         private bool _done;
+
+        protected Repl()
+        {
+            InitializeMetaCommands();
+        }
+
+        private void InitializeMetaCommands()
+        {
+            var methods = GetType().GetMethods(BindingFlags.Public |
+                                               BindingFlags.NonPublic |
+                                               BindingFlags.Static |
+                                               BindingFlags.Instance |
+                                               BindingFlags.FlattenHierarchy);
+
+            foreach (var method in methods)
+            {
+                var attribute = (MetaCommandAttribute)method.GetCustomAttribute(typeof(MetaCommandAttribute));
+                if (attribute == null) continue;
+
+                var metaCommand = new MetaCommand(attribute.Name, attribute.Description, method);
+                _metaCommands.Add(metaCommand);
+            }
+        }
+
         public void Run()
         {
             while (true)
@@ -300,7 +328,7 @@ namespace Orb
             {
                 if (view.CurrentLine == document.Count - 1)
                     return;
-                
+
                 var nextLine = document[view.CurrentLine + 1];
                 document[view.CurrentLine] += nextLine;
                 document.RemoveAt(view.CurrentLine + 1);
@@ -355,7 +383,7 @@ namespace Orb
         {
             if (_submissionHistory.Count == 0)
                 return;
-            
+
             document.Clear();
 
             var historyItem = _submissionHistory[_submissionHistoryIndex];
@@ -385,14 +413,121 @@ namespace Orb
             Console.Write(line);
         }
 
-        protected virtual void EvaluateMetaCommand(string input)
+        private void EvaluateMetaCommand(string input)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Invalid command {input}.");
-            Console.ResetColor();
+            var position = 1;
+            var inQuotes = false;
+            var args = new List<string>();
+            var sb = new StringBuilder();
+            while (position < input.Length)
+            {
+                var current = input[position];
+                var lookahead = position + 1 >= input.Length ? '\0' : input[position + 1];
+
+                if (char.IsWhiteSpace(current))
+                {
+                    if (!inQuotes)
+                        CommitPendingArgument();
+                    else
+                        sb.Append(current);
+                }
+                else if (current == '\"')
+                {
+                    if (!inQuotes)
+                        inQuotes = true;
+                    else if (lookahead == '\"')
+                    {
+                        sb.Append(current);
+                        position++;
+                    }
+                    else
+                        inQuotes = false;
+                }
+                else
+                {
+                    sb.Append(current);
+                }
+
+                position++;
+            }
+
+            CommitPendingArgument();
+
+            void CommitPendingArgument()
+            {
+                var arg = sb.ToString();
+                if (!string.IsNullOrWhiteSpace(arg))
+                    args.Add(arg);
+                sb.Clear();
+            }
+
+            var commandName = args.FirstOrDefault();
+            if (args.Count > 0)
+                args.RemoveAt(0);
+            
+            var command = _metaCommands.SingleOrDefault(mc => mc.Name == commandName);
+            if (command == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Invalid command {input}.");
+                Console.ResetColor();
+                return;
+            }
+
+            var parameters = command.Method.GetParameters();
+
+            if (args.Count != parameters.Length)
+            {
+                var parameterNames = string.Join(", ", parameters.Select(p => $"<{p.Name}>"));
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"ERROR: Invalid number of arguments.");
+                Console.WriteLine($"Usage: #{command.Name} {parameterNames}");
+                Console.ResetColor();
+                return;
+            }
+            
+            command.Method.Invoke(this, args.ToArray());
         }
 
         protected abstract bool IsCompleteSubmission(string text);
         protected abstract void EvaluateSubmission(string text);
+
+        [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+        protected sealed class MetaCommandAttribute : Attribute
+        {
+            public MetaCommandAttribute(string name, string description)
+            {
+                Name = name;
+                Description = description;
+            }
+
+            public string Name { get; }
+            public string Description { get; }
+        }
+
+        private sealed class MetaCommand
+        {
+            public MetaCommand(string name, string description, MethodInfo method)
+            {
+                Name = name;
+                Description = description;
+                Method = method;
+            }
+
+            public string Name { get; }
+            public string Description { get; }
+            public MethodInfo Method { get; }
+        }
+
+        [MetaCommand("help", "Shows help")]
+        protected void EvaluateHelp()
+        {
+            var maxNameLength = _metaCommands.Max(mc => mc.Name.Length);
+            foreach (var metaCommand in _metaCommands.OrderBy(mc => mc.Name))
+            {
+                var paddedName = metaCommand.Name.PadRight(maxNameLength);
+                Console.WriteLine($"#{paddedName}  {metaCommand.Description}");
+            }
+        }
     }
 }
