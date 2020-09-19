@@ -54,7 +54,6 @@ namespace Orb.CodeAnalysis.Symbols
             }
 
             writer.WritePunctuation(SyntaxKind.CloseParenthesisToken);
-            writer.WriteLine();
         }
 
         private static void WriteGlobalVariableTo(GlobalVariableSymbol symbol, TextWriter writer)
