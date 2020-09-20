@@ -47,8 +47,23 @@ namespace Orb.CodeAnalysis
             var submission = this;
             var seenSymbolNames = new HashSet<string>();
 
+            const System.Reflection.BindingFlags bindingFlags =
+                System.Reflection.BindingFlags.Static |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic;
+            
+            var builtinFunctions = typeof(BuiltinFunction)
+                .GetFields(bindingFlags)
+                .Where(field => field.FieldType == typeof(FunctionSymbol))
+                .Select(field => (FunctionSymbol)field.GetValue(obj: null))
+                .ToList();
+
             while (submission != null)
             {
+                foreach (var builtin in builtinFunctions)
+                    if (seenSymbolNames.Add(builtin.Name))
+                        yield return builtin;
+                
                 foreach (var function in submission.Functions)
                     if (seenSymbolNames.Add(function.Name))
                         yield return function;
@@ -124,11 +139,10 @@ namespace Orb.CodeAnalysis
         public void EmitTree(FunctionSymbol symbol, TextWriter writer)
         {
             var program = Binder.BindProgram(GlobalScope);
-            if (!program.Functions.TryGetValue(symbol, out var body))
-                return;
-            
             symbol.WriteTo(writer);
             writer.WriteLine();
+            if (!program.Functions.TryGetValue(symbol, out var body))
+                return;
             body.WriteTo(writer);
         }
     }

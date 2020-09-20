@@ -12,6 +12,7 @@ namespace Orb
     internal sealed class OrbRepl : Repl
     {
         private static bool _loadingSubmission;
+        private static readonly Compilation emptyCompilation = new Compilation();
         private Compilation _previous;
         private bool _showTree;
         private bool _showProgram;
@@ -105,12 +106,11 @@ namespace Orb
         [MetaCommand("ls", "Lists all symbols")]
         private void EvaluateLs()
         {
-            if (_previous == null)
-                return;
+            var compilation = _previous ?? emptyCompilation;
             
-            var symbols = _previous.GetSymbols()
-                                   .OrderBy(s => s.Kind)
-                                   .ThenBy(s => s.Name);
+            var symbols = compilation.GetSymbols()
+                                     .OrderBy(s => s.Kind)
+                                     .ThenBy(s => s.Name);
             
             foreach (var symbol in symbols)
             {
@@ -122,12 +122,11 @@ namespace Orb
         [MetaCommand("dump", "Shows bound tree of a given function")]
         private void EvaluateDump(string functionName)
         {
-            if (_previous == null)
-                return;
+            var compilation = _previous ?? emptyCompilation;
             
-            var symbol = _previous.GetSymbols()
-                                  .OfType<FunctionSymbol>()
-                                  .SingleOrDefault(f => f.Name == functionName);
+            var symbol = compilation.GetSymbols()
+                                    .OfType<FunctionSymbol>()
+                                    .SingleOrDefault(f => f.Name == functionName);
             
             if (symbol == null)
             {
@@ -137,7 +136,7 @@ namespace Orb
                 return;
             }
 
-            _previous.EmitTree(symbol, Console.Out);
+            compilation.EmitTree(symbol, Console.Out);
         }
 
         protected override bool IsCompleteSubmission(string text)
