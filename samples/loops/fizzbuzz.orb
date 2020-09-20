@@ -1,6 +1,6 @@
 function fizzbuzz(n: int)
 {
-    for i = 1 to 30
+    for i = 1 to n
     {
         if (i % 15 == 0)
             printLn("fizzbuzz")

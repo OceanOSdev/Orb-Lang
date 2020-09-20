@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Orb.CodeAnalysis.Binding;
-using Orb.CodeAnalysis.Lowering;
 using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 
@@ -27,6 +26,8 @@ namespace Orb.CodeAnalysis
 
         public Compilation Previous { get; }
         public ImmutableArray<SyntaxTree> SyntaxTrees { get; }
+        public ImmutableArray<FunctionSymbol> Functions => GlobalScope.Functions;
+        public ImmutableArray<VariableSymbol> Variables => GlobalScope.Variables;
 
         internal BoundGlobalScope GlobalScope
         {
@@ -38,6 +39,40 @@ namespace Orb.CodeAnalysis
                     Interlocked.CompareExchange(ref _globalScope, globalScope, null);
                 }
                 return _globalScope;
+            }
+        }
+
+        public IEnumerable<Symbol> GetSymbols()
+        {
+            var submission = this;
+            var seenSymbolNames = new HashSet<string>();
+
+            const System.Reflection.BindingFlags bindingFlags =
+                System.Reflection.BindingFlags.Static |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic;
+            
+            var builtinFunctions = typeof(BuiltinFunction)
+                .GetFields(bindingFlags)
+                .Where(field => field.FieldType == typeof(FunctionSymbol))
+                .Select(field => (FunctionSymbol)field.GetValue(obj: null))
+                .ToList();
+
+            while (submission != null)
+            {
+                foreach (var builtin in builtinFunctions)
+                    if (seenSymbolNames.Add(builtin.Name))
+                        yield return builtin;
+                
+                foreach (var function in submission.Functions)
+                    if (seenSymbolNames.Add(function.Name))
+                        yield return function;
+                
+                foreach (var variable in submission.Variables)
+                    if (seenSymbolNames.Add(variable.Name))
+                        yield return variable;
+                
+                submission = submission.Previous;
             }
         }
 
@@ -95,9 +130,20 @@ namespace Orb.CodeAnalysis
                         continue;
 
                     functionBody.Key.WriteTo(writer);
+                    writer.WriteLine();
                     functionBody.Value.WriteTo(writer);
                 }
             }
+        }
+
+        public void EmitTree(FunctionSymbol symbol, TextWriter writer)
+        {
+            var program = Binder.BindProgram(GlobalScope);
+            symbol.WriteTo(writer);
+            writer.WriteLine();
+            if (!program.Functions.TryGetValue(symbol, out var body))
+                return;
+            body.WriteTo(writer);
         }
     }
 }

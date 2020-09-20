@@ -1,4 +1,3 @@
-using System;
 using Orb.CodeAnalysis.Symbols;
 using Orb.CodeAnalysis.Syntax;
 
