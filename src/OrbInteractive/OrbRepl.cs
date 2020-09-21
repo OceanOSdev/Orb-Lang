@@ -11,7 +11,7 @@ namespace Orb
 {
     internal sealed class OrbRepl : Repl
     {
-        private static bool _loadingSubmission;
+        private bool _loadingSubmission;
         private static readonly Compilation emptyCompilation = new Compilation();
         private Compilation _previous;
         private bool _showTree;
@@ -231,10 +231,12 @@ namespace Orb
 
         private static void ClearSubmissions()
         {
-            Directory.Delete(GetSubmissionsDirectory(), recursive: true);
+            var path = GetSubmissionsDirectory();
+            if (Directory.Exists(path))
+                Directory.Delete(path, recursive: true);
         }
 
-        private static void SaveSubmission(string text)
+        private void SaveSubmission(string text)
         {
             if (_loadingSubmission)
                 return;
