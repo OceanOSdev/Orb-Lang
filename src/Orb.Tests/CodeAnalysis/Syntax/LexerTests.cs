@@ -152,10 +152,22 @@ namespace Orb.Tests.CodeAnalysis.Syntax
             if (t1Kind == SyntaxKind.IdentifierToken && t2IsKeyword)
                 return true;
 
+            if (t1IsKeyword && t2Kind == SyntaxKind.NumberToken)
+                return true;
+
+            if (t1Kind == SyntaxKind.NumberToken && t2IsKeyword)
+                return true;
+
             if (t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.NumberToken)
                 return true;
             
             if (t1Kind == SyntaxKind.StringToken && t2Kind == SyntaxKind.StringToken)
+                return true;
+
+            if (t1Kind == SyntaxKind.NumberToken && t2Kind == SyntaxKind.IdentifierToken)
+                return true;
+
+            if (t1Kind == SyntaxKind.IdentifierToken && t2Kind == SyntaxKind.NumberToken)
                 return true;
 
             if (t1Kind == SyntaxKind.BangToken && t2Kind == SyntaxKind.EqualsToken)
