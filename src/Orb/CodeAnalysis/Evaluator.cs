@@ -168,14 +168,25 @@ namespace Orb.CodeAnalysis
                 case BoundBinaryOperatorKind.Addition:
                     if (b.Type == TypeSymbol.Int)
                         return (int)left + (int)right;
+                    else if (b.Type == TypeSymbol.Double)
+                        return Convert.ToDouble(left) + Convert.ToDouble(right);
                     else
                         return (string)left + (string)right;
                 case BoundBinaryOperatorKind.Subtraction:
-                    return (int)left - (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left - (int)right;
+                    else // Assume that if b.Type isn't Int that it is Double.
+                        return Convert.ToDouble(left) - Convert.ToDouble(right);
                 case BoundBinaryOperatorKind.Multiplication:
-                    return (int)left * (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left * (int)right;
+                    else // Assume that if b.Type isn't Int that it is Double.
+                        return Convert.ToDouble(left) * Convert.ToDouble(right);
                 case BoundBinaryOperatorKind.Division:
-                    return (int)left / (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left / (int)right;
+                    else // Assume that if b.Type isn't Int that it is Double.
+                        return Convert.ToDouble(left) / Convert.ToDouble(right);
                 case BoundBinaryOperatorKind.Modulo:
                     return (int)left % (int)right;
                 case BoundBinaryOperatorKind.LogicalAnd:
@@ -202,13 +213,25 @@ namespace Orb.CodeAnalysis
                 case BoundBinaryOperatorKind.NotEquals:
                     return !Equals(left, right);
                 case BoundBinaryOperatorKind.Less:
-                    return (int)left < (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left < (int)right;
+                    else // Assume that if b.Type isn't Int that it is Double.
+                        return Convert.ToDouble(left) < Convert.ToDouble(right);
                 case BoundBinaryOperatorKind.LessOrEquals:
-                    return (int)left <= (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left <= (int)right;
+                    else // Assume that if b.Type isn't Int that it is Double.
+                        return Convert.ToDouble(left) <= Convert.ToDouble(right);
                 case BoundBinaryOperatorKind.Greater:
-                    return (int)left > (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left > (int)right;
+                    else // Assume that if b.Type isn't Int that it is Double.
+                        return Convert.ToDouble(left) > Convert.ToDouble(right);
                 case BoundBinaryOperatorKind.GreaterOrEquals:
-                    return (int)left >= (int)right;
+                    if (b.Type == TypeSymbol.Int)
+                        return (int)left >= (int)right;
+                    else // Assume that if b.Type isn't Int that it is Double.
+                        return Convert.ToDouble(left) >= Convert.ToDouble(right);
                 default:
                     throw new Exception($"Unexpected binary operator {b.Op}");
             }
@@ -270,6 +293,8 @@ namespace Orb.CodeAnalysis
                 return Convert.ToInt32(value);
             else if (node.Type == TypeSymbol.String)
                 return Convert.ToString(value);
+            else if (node.Type == TypeSymbol.Double)
+                return Convert.ToDouble(value);
             else
                 throw new Exception($"Unexpected type {node.Type}.");
         }

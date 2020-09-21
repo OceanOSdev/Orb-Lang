@@ -268,7 +268,8 @@ namespace Orb.CodeAnalysis.Binding
             {
                 writer.WriteKeyword(value);
             }
-            else if (node.Type == TypeSymbol.Int)
+            else if (node.Type == TypeSymbol.Int ||
+                     node.Type == TypeSymbol.Double)
             {
                 writer.WriteNumber(value);
             }

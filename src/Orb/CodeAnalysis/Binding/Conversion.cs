@@ -25,15 +25,27 @@ namespace Orb.CodeAnalysis.Binding
             if (from == to)
                 return Conversion.Identity;
             
-            if (from == TypeSymbol.Bool || from == TypeSymbol.Int)
+            if (from == TypeSymbol.Bool ||
+                from == TypeSymbol.Int ||
+                from == TypeSymbol.Double)
             {
                 if (to == TypeSymbol.String)
                     return Conversion.Explicit;
             }
 
+            if (from == TypeSymbol.Int)
+                if (to == TypeSymbol.Double)
+                    return Conversion.Implicit;
+
+            if (from == TypeSymbol.Double)
+                if (to == TypeSymbol.Int)
+                    return Conversion.Explicit;
+
             if (from == TypeSymbol.String)
             {
-                if (to == TypeSymbol.Bool || to == TypeSymbol.Int)
+                if (to == TypeSymbol.Bool ||
+                    to == TypeSymbol.Int ||
+                    to == TypeSymbol.Double)
                     return Conversion.Explicit;
             }
 

@@ -172,12 +172,25 @@ namespace Orb.CodeAnalysis.Syntax
                 case '"':
                     ReadString();
                     break;
-                case '0': case '1': case '2': case '3': case '4':
-                case '5': case '6': case '7': case '8': case '9':
+                case '.':
                     ReadNumber();
                     break;
-                case ' ': case '\t':
-                case '\n': case '\r':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    ReadNumber(startsWithNumber: true);
+                    break;
+                case ' ':
+                case '\t':
+                case '\n':
+                case '\r':
                     ReadWhiteSpace();
                     break;
                 default:
@@ -204,7 +217,7 @@ namespace Orb.CodeAnalysis.Syntax
             var text = SyntaxFacts.GetText(_kind);
             if (text == null)
                 text = _text.ToString(_start, length);
-            
+
             return new SyntaxToken(_syntaxTree, _kind, _start, text, _value);
         }
 
@@ -254,33 +267,85 @@ namespace Orb.CodeAnalysis.Syntax
         {
             while (char.IsWhiteSpace(Current))
                 _position++;
-            
+
             _kind = SyntaxKind.WhitespaceToken;
         }
 
-        private void ReadNumber()
+        private void ReadNumber(bool startsWithNumber = false)
         {
-            while (char.IsDigit(Current))
-                _position++;
-            
+            var isDouble = false;
+            var endsWithNumber = false;
+            while (true)
+            {
+                if (char.IsDigit(Current))
+                {
+                    if (_position == _start)
+                        startsWithNumber = true;
+
+                    endsWithNumber = true;
+                    _position++;
+                    continue;
+                }
+
+                if (Current == '.')
+                {
+                    endsWithNumber = false;
+
+                    if (isDouble)
+                    {
+                        _position++;
+                        break;
+                    }
+
+                    isDouble = true;
+                    _position++;
+                    continue;
+                }
+                break;
+            }
+
             var length = _position - _start;
             var text = _text.ToString(_start, length);
-            if (!int.TryParse(text, out var value))
+
+            if (!endsWithNumber)
             {
                 var span = new TextSpan(_start, length);
                 var location = new TextLocation(_text, span);
-                _diagnostics.ReportInvalidNumber(location, text, TypeSymbol.Int);
+                _diagnostics.ReportInvalidExpressionTerm(location, text);
+
+                _value = 0;
+                _kind = SyntaxKind.NumberToken;
             }
-            
-            _value = value;
-            _kind = SyntaxKind.NumberToken;
+
+            if (isDouble)
+            {
+                if (!double.TryParse(text, out var doubleValue))
+                {
+                    var span = new TextSpan(_start, length);
+                    var location = new TextLocation(_text, span);
+                    _diagnostics.ReportInvalidNumber(location, text, TypeSymbol.Double);
+                }
+                _value = doubleValue;
+                _kind = SyntaxKind.NumberToken;
+            }
+            else
+            {
+                if (!int.TryParse(text, out var intValue))
+                {
+                    var span = new TextSpan(_start, length);
+                    var location = new TextLocation(_text, span);
+                    _diagnostics.ReportInvalidNumber(location, text, TypeSymbol.Int);
+                }
+                _value = intValue;
+                _kind = SyntaxKind.NumberToken;
+            }
         }
 
         private void ReadIdentifierOrKeyword()
         {
             while (char.IsLetter(Current))
                 _position++;
-            
+
             var length = _position - _start;
             var text = _text.ToString(_start, length);
             _kind = SyntaxFacts.GetKeywordKind(text);
