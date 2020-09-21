@@ -25,6 +25,12 @@ namespace Orb.CodeAnalysis
             _diagnostics.Add(diagnostic);
         }
 
+        public void ReportInvalidExpressionTerm(TextLocation location, string expression)
+        {
+            var message = $"Invalid expression term '{expression}'.";
+            Report(location, message);
+        }
+
         public void ReportInvalidNumber(TextLocation location, string text, TypeSymbol type)
         {
             var message = $"The number {text} isn't valid {type}.";

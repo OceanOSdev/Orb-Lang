@@ -14,6 +14,8 @@ namespace Orb.CodeAnalysis.Binding
                 Type = TypeSymbol.Int;
             else if (value is string)
                 Type = TypeSymbol.String;
+            else if (value is double)
+                Type = TypeSymbol.Double;
             else
                 throw new Exception($"Unexpected literal '{value}' of type {value.GetType()}.");
         }

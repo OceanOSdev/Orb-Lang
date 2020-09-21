@@ -522,6 +522,7 @@ namespace Orb.CodeAnalysis.Binding
                 var argument = boundArguments[i];
                 var parameter = function.Parameters[i];
 
+                // TODO: Handle types that can implicitly cast to eachother
                 if (argument.Type != parameter.Type)
                 {
                     if (argument.Type != TypeSymbol.Error)
@@ -609,6 +610,8 @@ namespace Orb.CodeAnalysis.Binding
                     return TypeSymbol.Int;
                 case "string":
                     return TypeSymbol.String;
+                case "double":
+                    return TypeSymbol.Double;
                 default:
                     return null;
             }
