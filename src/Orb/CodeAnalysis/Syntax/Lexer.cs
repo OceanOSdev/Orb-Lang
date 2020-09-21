@@ -343,7 +343,7 @@ namespace Orb.CodeAnalysis.Syntax
 
         private void ReadIdentifierOrKeyword()
         {
-            while (char.IsLetter(Current))
+            while (char.IsLetterOrDigit(Current) || Current == '_')
                 _position++;
 
             var length = _position - _start;
