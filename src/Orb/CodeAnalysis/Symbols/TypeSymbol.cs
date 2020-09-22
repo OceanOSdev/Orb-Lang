@@ -8,6 +8,7 @@ namespace Orb.CodeAnalysis.Symbols
         public static readonly TypeSymbol String = new TypeSymbol("string");
         public static readonly TypeSymbol Double = new TypeSymbol("double");
         public static readonly TypeSymbol Void = new TypeSymbol("void");
+        public static readonly TypeSymbol Any = new TypeSymbol("any");
         
         private TypeSymbol(string name)
             : base(name)

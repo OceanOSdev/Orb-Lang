@@ -604,6 +604,8 @@ namespace Orb.CodeAnalysis.Binding
         {
             switch (name)
             {
+                case "any":
+                    return TypeSymbol.Any;
                 case "bool":
                     return TypeSymbol.Bool;
                 case "int":
