@@ -516,24 +516,15 @@ namespace Orb.CodeAnalysis.Binding
                 return new BoundErrorExpression();
             }
 
-            var hasErrors = false;
+            
             for (int i = 0; i < syntax.Arguments.Count; i++)
             {
+                var argLoc = syntax.Arguments[i].Location;
                 var argument = boundArguments[i];
                 var parameter = function.Parameters[i];
-
-                // TODO: Handle types that can implicitly cast to eachother
-                if (argument.Type != parameter.Type)
-                {
-                    if (argument.Type != TypeSymbol.Error)
-                        _diagnostics.ReportWrongArgumentType(syntax.Arguments[i].Location, parameter.Name, parameter.Type, argument.Type);
-
-                    hasErrors = true;
-                }
+                boundArguments[i] = BindConversion(argLoc, argument, parameter.Type);
+                
             }
-
-            if (hasErrors)
-                return new BoundErrorExpression();
 
             return new BoundCallExpression(function, boundArguments.ToImmutable());
         }
