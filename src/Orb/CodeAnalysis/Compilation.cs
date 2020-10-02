@@ -13,17 +13,25 @@ namespace Orb.CodeAnalysis
     public sealed class Compilation
     {
         private BoundGlobalScope _globalScope;
-        public Compilation(params SyntaxTree[] syntaxTrees)
-            : this(null, syntaxTrees)
-        {
-        }
 
-        private Compilation(Compilation previous, params SyntaxTree[] syntaxTrees)
+        private Compilation(bool isScript, Compilation previous, params SyntaxTree[] syntaxTrees)
         {
+            IsScript = isScript;
             Previous = previous;
             SyntaxTrees = syntaxTrees.ToImmutableArray();
         }
 
+        public static Compilation Create(params SyntaxTree[] syntaxTrees)
+        {
+            return new Compilation(isScript: false, previous: null, syntaxTrees);
+        }
+
+        public static Compilation CreateScript(Compilation previous, params SyntaxTree[] syntaxTrees)
+        {
+            return new Compilation(isScript: true, previous, syntaxTrees);
+        }
+
+        public bool IsScript { get; }
         public Compilation Previous { get; }
         public ImmutableArray<SyntaxTree> SyntaxTrees { get; }
         public ImmutableArray<FunctionSymbol> Functions => GlobalScope.Functions;
@@ -35,7 +43,7 @@ namespace Orb.CodeAnalysis
             {
                 if (_globalScope == null)
                 {
-                    var globalScope = Binder.BindGlobalScope(Previous?.GlobalScope, SyntaxTrees);
+                    var globalScope = Binder.BindGlobalScope(IsScript, Previous?.GlobalScope, SyntaxTrees);
                     Interlocked.CompareExchange(ref _globalScope, globalScope, null);
                 }
                 return _globalScope;
@@ -59,11 +67,7 @@ namespace Orb.CodeAnalysis
                 .ToList();
 
             while (submission != null)
-            {
-                foreach (var builtin in builtinFunctions)
-                    if (seenSymbolNames.Add(builtin.Name))
-                        yield return builtin;
-                
+            {                
                 foreach (var function in submission.Functions)
                     if (seenSymbolNames.Add(function.Name))
                         yield return function;
@@ -72,18 +76,23 @@ namespace Orb.CodeAnalysis
                     if (seenSymbolNames.Add(variable.Name))
                         yield return variable;
                 
+                foreach (var builtin in builtinFunctions)
+                    if (seenSymbolNames.Add(builtin.Name))
+                        yield return builtin;
+                
                 submission = submission.Previous;
             }
-        }
-
-        public Compilation ContinueWith(SyntaxTree syntaxTree)
-        {
-            return new Compilation(this, syntaxTree);
         }
 
         public EvaluationResult Evaluate()
         {
             return Evaluate(new Dictionary<VariableSymbol, object>());
+        }
+
+        private BoundProgram GetProgram()
+        {
+            var previous = Previous == null ? null : Previous.GetProgram();
+            return Binder.BindProgram(IsScript, previous, GlobalScope);
         }
 
         public EvaluationResult Evaluate(Dictionary<VariableSymbol, object> variables)
@@ -94,17 +103,17 @@ namespace Orb.CodeAnalysis
             if (diagnostics.Any())
                 return new EvaluationResult(diagnostics, null);
 
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
 
-            var appPath = Environment.GetCommandLineArgs()[0];
-            var appDirectory = Path.GetDirectoryName(appPath);
-            var cfgPath = Path.Combine(appDirectory, "cfg.dot");
-            var cfgStatements = !program.Statement.Statements.Any() && program.Functions.Any()
-                                    ? program.Functions.Last().Value
-                                    : program.Statement;
-            var cfg = ControlFlowGraph.Create(cfgStatements);
-            using (var streamWriter = new StreamWriter(cfgPath))
-                cfg.WriteTo(streamWriter);
+            // var appPath = Environment.GetCommandLineArgs()[0];
+            // var appDirectory = Path.GetDirectoryName(appPath);
+            // var cfgPath = Path.Combine(appDirectory, "cfg.dot");
+            // var cfgStatements = !program.Statement.Statements.Any() && program.Functions.Any()
+            //                         ? program.Functions.Last().Value
+            //                         : program.Statement;
+            // var cfg = ControlFlowGraph.Create(cfgStatements);
+            // using (var streamWriter = new StreamWriter(cfgPath))
+            //     cfg.WriteTo(streamWriter);
 
             if (program.Diagnostics.Any())
                 return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
@@ -116,29 +125,15 @@ namespace Orb.CodeAnalysis
 
         public void EmitTree(TextWriter writer)
         {
-            var program = Binder.BindProgram(GlobalScope);
-
-            if (program.Statement.Statements.Any())
-            {
-                program.Statement.WriteTo(writer);
-            }
-            else
-            {
-                foreach (var functionBody in program.Functions)
-                {
-                    if (!GlobalScope.Functions.Contains(functionBody.Key))
-                        continue;
-
-                    functionBody.Key.WriteTo(writer);
-                    writer.WriteLine();
-                    functionBody.Value.WriteTo(writer);
-                }
-            }
+            if (GlobalScope.MainFunction != null)
+                EmitTree(GlobalScope.MainFunction, writer);
+            else if (GlobalScope.ScriptFunction != null)
+                EmitTree(GlobalScope.ScriptFunction, writer);
         }
 
         public void EmitTree(FunctionSymbol symbol, TextWriter writer)
         {
-            var program = Binder.BindProgram(GlobalScope);
+            var program = GetProgram();
             symbol.WriteTo(writer);
             writer.WriteLine();
             if (!program.Functions.TryGetValue(symbol, out var body))
