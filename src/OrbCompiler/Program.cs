@@ -38,7 +38,7 @@ namespace Orb
             if (hasErrors)
                 return 1;
 
-            var compilation = new Compilation(syntaxTrees.ToArray());
+            var compilation = Compilation.Create(syntaxTrees.ToArray());
             var result = compilation.Evaluate();
 
             if (!result.Diagnostics.Any())
