@@ -105,15 +105,15 @@ namespace Orb.CodeAnalysis
 
             var program = GetProgram();
 
-            var appPath = Environment.GetCommandLineArgs()[0];
-            var appDirectory = Path.GetDirectoryName(appPath);
-            var cfgPath = Path.Combine(appDirectory, "cfg.dot");
-            var cfgStatements = !program.Statement.Statements.Any() && program.Functions.Any()
-                                    ? program.Functions.Last().Value
-                                    : program.Statement;
-            var cfg = ControlFlowGraph.Create(cfgStatements);
-            using (var streamWriter = new StreamWriter(cfgPath))
-                cfg.WriteTo(streamWriter);
+            // var appPath = Environment.GetCommandLineArgs()[0];
+            // var appDirectory = Path.GetDirectoryName(appPath);
+            // var cfgPath = Path.Combine(appDirectory, "cfg.dot");
+            // var cfgStatements = !program.Statement.Statements.Any() && program.Functions.Any()
+            //                         ? program.Functions.Last().Value
+            //                         : program.Statement;
+            // var cfg = ControlFlowGraph.Create(cfgStatements);
+            // using (var streamWriter = new StreamWriter(cfgPath))
+            //     cfg.WriteTo(streamWriter);
 
             if (program.Diagnostics.Any())
                 return new EvaluationResult(program.Diagnostics.ToImmutableArray(), null);
@@ -125,24 +125,10 @@ namespace Orb.CodeAnalysis
 
         public void EmitTree(TextWriter writer)
         {
-            var program = GetProgram();
-
-            if (program.Statement.Statements.Any())
-            {
-                program.Statement.WriteTo(writer);
-            }
-            else
-            {
-                foreach (var functionBody in program.Functions)
-                {
-                    if (!GlobalScope.Functions.Contains(functionBody.Key))
-                        continue;
-
-                    functionBody.Key.WriteTo(writer);
-                    writer.WriteLine();
-                    functionBody.Value.WriteTo(writer);
-                }
-            }
+            if (GlobalScope.MainFunction != null)
+                EmitTree(GlobalScope.MainFunction, writer);
+            else if (GlobalScope.ScriptFunction != null)
+                EmitTree(GlobalScope.ScriptFunction, writer);
         }
 
         public void EmitTree(FunctionSymbol symbol, TextWriter writer)

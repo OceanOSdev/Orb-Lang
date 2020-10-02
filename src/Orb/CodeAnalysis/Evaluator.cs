@@ -37,7 +37,11 @@ namespace Orb.CodeAnalysis
 
         public object Evaluate()
         {
-            return EvaluateStatement(_program.Statement);
+            var function = _program.MainFunction ?? _program.ScriptFunction;
+            if (function == null) return null;
+
+            var body = _functions[function];
+            return EvaluateStatement(body);
         }
 
         public object EvaluateStatement(BoundBlockStatement body)
